@@ -1,4 +1,5 @@
-﻿using PIV_POC_Client.Interfaces;
+﻿using Amazon.SQS.Model;
+using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Models.Results;
 using PIV_POC_Client.STOMP.Wrappers;
 using System.Net.WebSockets;
@@ -20,26 +21,32 @@ namespace PIV_POC_Client.Services
             MessageProcessor = messageProcessor ?? throw new ArgumentNullException(nameof(messageProcessor));
         }
 
-        public async Task ProcessMessage(ClientWebSocket client, Guid subscriptionId)
+        public async Task<SendMessageBatchRequestEntry> ProcessMessage(ClientWebSocket client, Guid subscriptionId)
         {
-            MessageParseResult result = new MessageParseResult();
+            SendMessageBatchRequestEntry result = new SendMessageBatchRequestEntry();
             try
             {
                 string rawMessage = await ServerFrameWrapper.ReceiveMessage(client);
 
-                Console.WriteLine(rawMessage); 
+                Console.WriteLine($"This messages has been processed by {subscriptionId}");
 
                 if (string.IsNullOrWhiteSpace(rawMessage))
                 {
-                    return;
+                    return result;
                 }
 
-                await MessageProcessor.Process(subscriptionId, rawMessage);
+                result.Id = Guid.NewGuid().ToString();
+                result.MessageBody = await MessageProcessor.Process(subscriptionId, rawMessage);;
+
+
+                return result;
             }
 
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message.ToString());
+
+                return result;
             }
         }
     }
