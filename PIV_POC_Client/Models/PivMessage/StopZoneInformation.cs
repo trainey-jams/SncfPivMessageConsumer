@@ -4,7 +4,7 @@ namespace PIV_POC_Client.Models.PivMessage
 {
     public class StopZoneInformation
     {
-        public ListeCodes listeCodes { get; set; }
+        public ListeCodes listeCodes { get; set; } = new ListeCodes();
 
         public bool indicateurSNCF { get; set; }
 

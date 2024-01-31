@@ -2,8 +2,10 @@
 {
     public class Reservation
     {
-        public string codeClasse { get; set; }
-        public string libelleClasse { get; set; }
-        public string type { get; set; }
+        public string codeClasse { get; set; } = string.Empty;
+        
+        public string libelleClasse { get; set; } = string.Empty;
+        
+        public string type { get; set; } = string.Empty;
     }
 }

@@ -4,7 +4,7 @@ namespace PIV_POC_Client.Models.PivMessage
 {
     public class TransitionEvent
     {
-        public AffichageIV affichageIV { get; set; }
+        public AffichageIV affichageIV { get; set; } = new AffichageIV();
 
         [JsonProperty("composition")]
         public ServiceComposition ServiceComposition { get; set; } = new ServiceComposition();

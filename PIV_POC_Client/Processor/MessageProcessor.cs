@@ -9,13 +9,6 @@ namespace PIV_POC_Client.Processor
 {
     public class MessageProcessor : IMessageProcessor
     {
-        private readonly MessageProcessorConfiguration ProcessorConfiguration;
-
-        public MessageProcessor(IOptions<MessageProcessorConfiguration> processorConfiguration)
-        {
-            ProcessorConfiguration = processorConfiguration.Value;
-        }
-
         private string ParseStompMessageToJson(string rawMessage)
         {
             var metaDataString = "\"MESSAGEHEADERS\": ";
@@ -58,7 +51,7 @@ namespace PIV_POC_Client.Processor
 
                 return messageJson;
 
-               // Console.WriteLine(messageJson);
+                // Console.WriteLine(messageJson);
 
                 //WriteMessageToFile("C:\\Users\\jamessm\\Downloads\\PIV_Message_Files", "PIV_Messages.json", messageJson);
             }

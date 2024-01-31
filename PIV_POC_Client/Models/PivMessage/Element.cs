@@ -8,27 +8,27 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("voiture")]
         public List<TrainCarriage> TrainCarriages { get; set; } = new List<TrainCarriage>();
 
-        public string typeMateriel { get; set; }
+        public string typeMateriel { get; set; } = string.Empty;
 
-        public string serieMateriel { get; set; }
+        public string serieMateriel { get; set; } = string.Empty;
 
-        public string familleMateriel { get; set; }
+        public string familleMateriel { get; set; } = string.Empty;
 
-        public string libelleFamilleMateriel { get; set; }
+        public string libelleFamilleMateriel { get; set; } = string.Empty;
 
-        public string codeNature { get; set; }
+        public string codeNature { get; set; } = string.Empty;
 
-        public string libelleNature { get; set; }
+        public string libelleNature { get; set; } = string.Empty;
 
-        public string numeroAffectation { get; set; }
+        public string numeroAffectation { get; set; } = string.Empty;
 
-        public string rangElement { get; set; }
+        public string rangElement { get; set; } = string.Empty;
 
-        public string nomLivree { get; set; }
+        public string nomLivree { get; set; } = string.Empty;
 
-        public string imageLivree { get; set; }
+        public string imageLivree { get; set; } = string.Empty;
 
-        public string nomCommercial { get; set; }
+        public string nomCommercial { get; set; } = string.Empty;
 
         [JsonProperty("nombreVoituresCommerciales")]
         public string NumberOfCommercialCarriages { get; set; } = string.Empty;

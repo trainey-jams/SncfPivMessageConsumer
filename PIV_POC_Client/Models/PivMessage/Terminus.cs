@@ -4,19 +4,19 @@ namespace PIV_POC_Client.Models.PivMessage
 {
     public class Terminus
     {
-        public ListeCoordonnees listeCoordonnees { get; set; }
+        public ListeCoordonnees listeCoordonnees { get; set; } = new ListeCoordonnees();
 
-        public Commune commune { get; set; }
+        public Commune commune { get; set; } = new Commune();
 
-        public Department departement { get; set; }
+        public Department departement { get; set; } = new Department();
 
-        public Region region { get; set; }
+        public Region region { get; set; } = new Region();
 
         [JsonProperty("pays")]
         public Country Country { get; set; } = new Country();
 
         [JsonProperty("infosZoneArret")]
-        public StopZoneInformation StopZoneInformation { get; set; }
+        public StopZoneInformation StopZoneInformation { get; set; } = new StopZoneInformation();
 
         [JsonProperty("code")]
         public string Code { get; set; } = string.Empty;

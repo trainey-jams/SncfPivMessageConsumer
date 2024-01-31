@@ -1,119 +1,63 @@
-﻿using Amazon.SQS.Model;
+﻿using Apache.NMS.ActiveMQ.Commands;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using PIV_POC_Client._OpenWire;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
+using PIV_POC_Client.Mappers;
 using PIV_POC_Client.Models.Config;
-using System.Collections.Concurrent;
+using PIV_POC_Client.Models.PivMessage.Root;
 
 namespace PIV_POC_Client.App
 {
     public class PIVNotificationClient
     {
-        private readonly IWebSocketClientFactory ClientFactory;
-        private readonly IStompClientFrameWrapper ClientFrameWrapper;
-        private readonly IMessageService MessageService;
-        private readonly NotificationClientConfiguration NotificationClientConfiguration;
+        private readonly IOpenWireSessionFactory SessionFactory;
+        private readonly IActiveMQMapper Mapper;
         private readonly IS3Repository S3Repository;
-        
+        private readonly ISqsRepository SqsRepository;
+
         public PIVNotificationClient(
-            IWebSocketClientFactory clientFactory, 
-            IStompClientFrameWrapper clientFrameWrapper,
-            IMessageService messageService,
-            IOptions<NotificationClientConfiguration> notificationClientConfiguration,
-            IS3Repository s3Repository)
+            IOpenWireSessionFactory sessionFactory, 
+            IActiveMQMapper mapper,
+            IS3Repository s3Repository,
+            ISqsRepository sqsRepository)
         {
-            ClientFactory = clientFactory;
-            ClientFrameWrapper = clientFrameWrapper;
-            MessageService = messageService;
-            NotificationClientConfiguration = notificationClientConfiguration.Value;
-            S3Repository = s3Repository;  
+            SessionFactory = sessionFactory;
+            Mapper = mapper;
+            S3Repository = s3Repository; 
+            SqsRepository = sqsRepository;
         }
 
         public async Task GetMessages()
         {
-            using (var client = await ClientFactory.GetClient(NotificationClientConfiguration.WebsocketClientConfiguration))
+            using var session = await SessionFactory.GetSession();
+
+            using var dest = await session.GetTopicAsync("VirtualTopic.circulationsEnrichies.v2");
+            using var consumer = await session.CreateConsumerAsync(dest);
+
+            var cancellationToken = new CancellationTokenSource();
+            var token = cancellationToken.Token;
+
+            while (!token.IsCancellationRequested)
             {
-                Console.WriteLine($"Client status {client.State}");
-               
-                var cancellationToken = new CancellationTokenSource();
-                var token = cancellationToken.Token;
+                var msg = await consumer.ReceiveAsync() as ActiveMQMessage;
 
-                await ClientFrameWrapper.Connect(client, NotificationClientConfiguration.ConnectConfiguration);
-                await ClientFrameWrapper.Subscribe(client, NotificationClientConfiguration.SubscribeConfiguration);
+                PivMessageRoot root = Mapper.Map(msg);
 
+                string payload = System.Text.Encoding.UTF8.GetString(msg.Content);
+                root.MessageBody = JsonConvert.DeserializeObject<MessageBody>(payload);
 
-                Guid guid1 = Guid.Parse("529b8734-2b78-4a1e-892c-46c4c899342a");
-                Guid guid2 = Guid.Parse("38daf51f-169d-4a79-90af-c16950724a78");
-                Guid guid3 = Guid.Parse("d3dfe650-67a9-4a86-a9d7-06ed1b013434");
+                await SqsRepository.PublishMessage(JsonConvert.SerializeObject(root));
+            }
 
-                ConcurrentQueue<SendMessageBatchRequestEntry> MessagesToSQS = new ConcurrentQueue<SendMessageBatchRequestEntry>();
+            Console.ReadKey();
+            cancellationToken.Cancel();
 
-                var task = Task.Run(async () =>
-                {
-                    while (!token.IsCancellationRequested)
-                    {
-                        //Thread worker1 = new Thread(async async => { await MessageService.ProcessMessage(client, guid1); });
-                        //Thread worker2 = new Thread(async async => { await MessageService.ProcessMessage(client, guid2); });
-                        //Thread worker3 = new Thread(async async => { await MessageService.ProcessMessage(client, guid3); });
-
-                        Thread worker1 = 
-                            new Thread(async async => 
-                            {
-                                SendMessageBatchRequestEntry e = await MessageService.ProcessMessage(client, guid1);
-
-                                if(!string.IsNullOrWhiteSpace(e.MessageBody))
-                                {
-                                    MessagesToSQS.Enqueue(e);
-                                }
-                            
-                            });
-                        //Thread worker2 = new Thread(async async => { MessagesToSQS.Enqueue(await MessageService.ProcessMessage(client, guid2)); });
-                        //Thread worker3 = new Thread(async async => { MessagesToSQS.Enqueue(await MessageService.ProcessMessage(client, guid3)); });
-
-                        worker1.Start();
-                        //worker2.Start();
-                        //worker3.Start();
-
-                        worker1.Join();
-                        //worker2.Join();
-                        //worker3.Join();
-
-                        SendMessageBatchRequestEntry entry;
-                        if (MessagesToSQS.Count > 10)
-                        {
-                            List<SendMessageBatchRequestEntry> msgs = new List<SendMessageBatchRequestEntry>();
-
-                            for (int i = 0; i < 3; i++)
-                            {
-                                if (MessagesToSQS.TryDequeue(out entry))
-                                {
-                                    msgs.Add(entry);
-                                }
-
-                            }
-                            try
-                            {
-                                await S3Repository.SendMessageBatchToS3(msgs);
-                            }
-
-                            catch (Exception ex) 
-                            {
-                            
-                                Console.WriteLine(ex.ToString());
-                            }
-                        }
-
-                          Console.WriteLine($"Number of current threads is {System.Diagnostics.Process.GetCurrentProcess().Threads.Count}");
-                    }
-                }, token);
-
-                Console.ReadKey();
-                cancellationToken.Cancel();
-
+            var task = Task.Run(async () =>
+            {
                 if (token.IsCancellationRequested)
                 {
-                    await ClientFrameWrapper.Disconnect(client, NotificationClientConfiguration.ReceiptId);
-
                     Console.WriteLine("\n");
                     Console.WriteLine("*********************************************************");
                     Console.WriteLine("Task cancelled by user, disconnecting from message stream.");
@@ -121,15 +65,45 @@ namespace PIV_POC_Client.App
 
                     await Task.Delay(5000);
                 }
+            }, token);
 
-                task.Wait(token);
-            }
+            // ConcurrentQueue<SendMessageBatchRequestEntry> MessagesToSQS = new ConcurrentQueue<SendMessageBatchRequestEntry>();
+            //Thread worker1 =
+            //                new Thread(async async =>
+            //                {
+            //                    SendMessageBatchRequestEntry e = await MessageService.ProcessMessage(client, guid1);
 
-            Console.WriteLine("\n");
-            Console.WriteLine("*********************************************************");
-            Console.WriteLine("WebSocket closed, shutting down.");
-            Console.WriteLine("*********************************************************");
-            await Task.Delay(4000);
+            //                    if (!string.IsNullOrWhiteSpace(e.MessageBody))
+            //                    {
+            //                        MessagesToSQS.Enqueue(e);
+            //                    }
+
+            //                });
+
+            //SendMessageBatchRequestEntry entry;
+            //if (MessagesToSQS.Count > 10)
+            //{
+            //    List<SendMessageBatchRequestEntry> msgs = new List<SendMessageBatchRequestEntry>();
+
+            //    for (int i = 0; i < 3; i++)
+            //    {
+            //        if (MessagesToSQS.TryDequeue(out entry))
+            //        {
+            //            msgs.Add(entry);
+            //        }
+
+            //    }
+            //    try
+            //    {
+            //        await S3Repository.SendMessageBatchToS3(msgs);
+            //    }
+
+            //    catch (Exception ex)
+            //    {
+
+            //        Console.WriteLine(ex.ToString());
+            //    }
+            //}
         }
     }
 }

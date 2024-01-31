@@ -1,16 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PIV_POC_Client._OpenWire;
 using PIV_POC_Client.AWS.ClientFactories.S3;
 using PIV_POC_Client.AWS.ClientFactories.SQS;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.Config.AWS;
-using PIV_POC_Client.Models.Config.DAL;
+using PIV_POC_Client.Models.Config.Openwire;
 using PIV_POC_Client.Processor;
 using PIV_POC_Client.Services;
-using PIV_POC_Client.STOMP.Wrappers;
-using PIV_POC_Client.WebSocketClient;
 
 namespace PIV_POC_Client.App
 {
@@ -42,20 +41,17 @@ namespace PIV_POC_Client.App
             var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
 
             Configuration = builder.Build();
-
-            services.Configure<NotificationClientConfiguration>(Configuration.GetSection("NotificationClientConfiguration"));
-            services.Configure<SqlConnectionConfiguration>(Configuration.GetSection("SqlConnectionConfiguration"));
-            services.Configure<MessageRepositoryConfiguration>(Configuration.GetSection("MessageRepositoryConfiguration"));
-            services.Configure<MessageProcessorConfiguration>(Configuration.GetSection("MessageProcessorConfiguration"));
             
             services.Configure<AWSCredentialConfig>(Configuration.GetSection("AWSCredentialConfig"));
             services.Configure<S3Config>(Configuration.GetSection("AWSCredentialConfig"));
             services.Configure<AWSCredentialConfig>(Configuration.GetSection("AWSCredentialConfig"));
 
-            services.AddTransient<IWebSocketClientFactory, WebSocketClientFactory>();
+            services.Configure<OpenWireConnectionConfig>(Configuration.GetSection("OpenWireConnectionConfig"));
+
             services.AddTransient<IMessageProcessor, MessageProcessor>();
-            services.AddTransient<IStompClientFrameWrapper, StompClientFrameWrapper>();
-            services.AddTransient<IStompServerFrameWrapper, StompServerFrameWrapper>();
+
+            services.AddTransient<IOpenWireConnectionFactory, OpenWireConnectionFactory>();
+            services.AddTransient<IOpenWireSessionFactory, OpenWireSessionFactory>();
 
             services.AddTransient<ISqsClientFactory, SqsClientFactory>();
             services.AddTransient<IS3ClientFactory, S3ClientFactory>();

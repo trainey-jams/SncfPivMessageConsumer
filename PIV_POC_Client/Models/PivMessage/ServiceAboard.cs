@@ -4,7 +4,7 @@ namespace PIV_POC_Client.Models.PivMessage
 {
     public class ServiceAboard
     {
-        public ListeEmplacementsConcernes listeEmplacementsConcernes { get; set; }
+        public ListeEmplacementsConcernes listeEmplacementsConcernes { get; set; } = new ListeEmplacementsConcernes();
 
         [JsonProperty("code")]
         public string Code { get; set; } = string.Empty;

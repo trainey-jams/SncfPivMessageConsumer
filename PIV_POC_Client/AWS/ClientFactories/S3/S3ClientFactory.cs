@@ -8,10 +8,6 @@ using PIV_POC_Client.Models.Config.AWS;
 
 namespace PIV_POC_Client.AWS.ClientFactories.S3
 {
-    public interface IS3ClientFactory
-    {
-        IAmazonS3 GetS3Client();
-    }
 
     public class S3ClientFactory : IS3ClientFactory
     {

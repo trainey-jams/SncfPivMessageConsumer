@@ -2,6 +2,6 @@
 {
     public class Relation
     {
-        public string codeRelation { get; set; }
+        public string codeRelation { get; set; } = string.Empty;
     }
 }

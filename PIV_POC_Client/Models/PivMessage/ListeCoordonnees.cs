@@ -2,6 +2,6 @@
 {
     public class ListeCoordonnees
     {
-        public List<Coordinates> coordonnees { get; set; }
+        public List<Coordinates> coordonnees { get; set; } = new List<Coordinates>();
     }
 }

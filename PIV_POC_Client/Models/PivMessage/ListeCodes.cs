@@ -2,7 +2,7 @@
 {
     public class ListeCodes
     {
-        public List<Valeur> valeur { get; set; }
-        public string typeDefaut { get; set; }
+        public List<Valeur> valeur { get; set; } = new List<Valeur>();
+        public string typeDefaut { get; set; } = string.Empty;
     }
 }

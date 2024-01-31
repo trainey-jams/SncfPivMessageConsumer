@@ -2,7 +2,7 @@
 {
     public class Department
     {
-        public string code { get; set; }
-        public string libelle { get; set; }
+        public string code { get; set; } = string.Empty;
+        public string libelle { get; set; } = string.Empty;
     }
 }

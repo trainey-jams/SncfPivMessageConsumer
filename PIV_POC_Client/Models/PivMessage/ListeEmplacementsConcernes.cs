@@ -2,6 +2,6 @@
 {
     public class ListeEmplacementsConcernes
     {
-        public List<Location> emplacement { get; set; }
+        public List<Location> emplacement { get; set; } = new List<Location>();
     }
 }

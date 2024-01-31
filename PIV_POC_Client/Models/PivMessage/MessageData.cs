@@ -32,7 +32,7 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("listeArretsDesserte")]
         public ServiceCallingPoints ServiceCallingPoints { get; set; } = new ServiceCallingPoints();
 
-        public AffichageIV affichageIV { get; set; }
+        public AffichageIV affichageIV { get; set; } = new AffichageIV();
 
         [JsonProperty("operateur")]
         public Operator Operator { get; set; } = new Operator();
