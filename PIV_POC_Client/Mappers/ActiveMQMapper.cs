@@ -16,7 +16,7 @@ namespace PIV_POC_Client.Mappers
             root.BrokerInTime = rawMessage.BrokerInTime;
             root.Expiration = rawMessage.Expiration.ToString();
             root.Destination = rawMessage.Destination.ToString();
-            root.MessageId = rawMessage.MessageId.ToString();
+            root.PartitionKey = rawMessage.MessageId.ToString();
 
             string payload = System.Text.Encoding.UTF8.GetString(rawMessage.Content);
             root.MessageBody = JsonConvert.DeserializeObject<MessageBody>(payload);

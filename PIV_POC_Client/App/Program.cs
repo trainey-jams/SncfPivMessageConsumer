@@ -5,6 +5,7 @@ using PIV_POC_Client.AWS.ClientFactories.S3;
 using PIV_POC_Client.AWS.ClientFactories.SQS;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
+using PIV_POC_Client.Mappers;
 using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.Config.AWS;
 using PIV_POC_Client.Models.Config.Openwire;
@@ -43,12 +44,13 @@ namespace PIV_POC_Client.App
             Configuration = builder.Build();
             
             services.Configure<AWSCredentialConfig>(Configuration.GetSection("AWSCredentialConfig"));
-            services.Configure<S3Config>(Configuration.GetSection("AWSCredentialConfig"));
-            services.Configure<AWSCredentialConfig>(Configuration.GetSection("AWSCredentialConfig"));
+            services.Configure<S3Config>(Configuration.GetSection("S3Config"));
+            services.Configure<SqsConfig>(Configuration.GetSection("SqsConfig"));
 
             services.Configure<OpenWireConnectionConfig>(Configuration.GetSection("OpenWireConnectionConfig"));
 
             services.AddTransient<IMessageProcessor, MessageProcessor>();
+            services.AddTransient<IActiveMQMapper, ActiveMQMapper>();
 
             services.AddTransient<IOpenWireConnectionFactory, OpenWireConnectionFactory>();
             services.AddTransient<IOpenWireSessionFactory, OpenWireSessionFactory>();

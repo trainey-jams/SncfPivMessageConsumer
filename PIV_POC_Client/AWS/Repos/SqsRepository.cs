@@ -25,7 +25,7 @@ namespace PIV_POC_Client.AWS.Repos
 
             var client = _sqsClientFactory.GetSqsClient();
 
-            await client.SendMessageAsync(request);
+            var response = await client.SendMessageAsync(request);
         }
 
         public async Task PublishMessageBatch(List<SendMessageBatchRequestEntry> messages)

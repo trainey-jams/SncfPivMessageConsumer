@@ -1,11 +1,8 @@
 ﻿using Apache.NMS.ActiveMQ.Commands;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PIV_POC_Client._OpenWire;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
-using PIV_POC_Client.Mappers;
-using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.PivMessage.Root;
 
 namespace PIV_POC_Client.App
@@ -39,7 +36,9 @@ namespace PIV_POC_Client.App
             var cancellationToken = new CancellationTokenSource();
             var token = cancellationToken.Token;
 
-            while (!token.IsCancellationRequested)
+            Console.WriteLine("Connected, session started.");
+
+            var task = Task.Run(async () =>
             {
                 var msg = await consumer.ReceiveAsync() as ActiveMQMessage;
 
@@ -49,23 +48,20 @@ namespace PIV_POC_Client.App
                 root.MessageBody = JsonConvert.DeserializeObject<MessageBody>(payload);
 
                 await SqsRepository.PublishMessage(JsonConvert.SerializeObject(root));
-            }
+            }, token);
 
             Console.ReadKey();
             cancellationToken.Cancel();
 
-            var task = Task.Run(async () =>
+            if (token.IsCancellationRequested)
             {
-                if (token.IsCancellationRequested)
-                {
-                    Console.WriteLine("\n");
-                    Console.WriteLine("*********************************************************");
-                    Console.WriteLine("Task cancelled by user, disconnecting from message stream.");
-                    Console.WriteLine("*********************************************************");
+                Console.WriteLine("\n");
+                Console.WriteLine("*********************************************************");
+                Console.WriteLine("Task cancelled by user, disconnecting from message stream.");
+                Console.WriteLine("*********************************************************");
 
-                    await Task.Delay(5000);
-                }
-            }, token);
+                await Task.Delay(5000);
+            }
 
             // ConcurrentQueue<SendMessageBatchRequestEntry> MessagesToSQS = new ConcurrentQueue<SendMessageBatchRequestEntry>();
             //Thread worker1 =
