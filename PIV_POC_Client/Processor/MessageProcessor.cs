@@ -11,9 +11,7 @@ namespace PIV_POC_Client.Processor
     {
         private readonly MessageProcessorConfiguration ProcessorConfiguration;
 
-        public MessageProcessor(
-
-                                    IOptions<MessageProcessorConfiguration> processorConfiguration)
+        public MessageProcessor(IOptions<MessageProcessorConfiguration> processorConfiguration)
         {
             ProcessorConfiguration = processorConfiguration.Value;
         }
@@ -39,6 +37,8 @@ namespace PIV_POC_Client.Processor
 
             string message = $"{{{metaDataString},{bodyString}}}";
 
+            message = message.Replace('\x0', ' ');
+
             return message;
         }
 
@@ -48,7 +48,7 @@ namespace PIV_POC_Client.Processor
             File.AppendAllText(Path.Combine(docPath, fileName), message + Environment.NewLine);
         }
 
-        public async Task Process(Guid subscriptionId, string rawMessage)
+        public async Task<string> Process(Guid subscriptionId, string rawMessage)
         {
             PivMessageRoot messageRoot = new PivMessageRoot();
 
@@ -56,20 +56,23 @@ namespace PIV_POC_Client.Processor
             {
                 string messageJson = ParseStompMessageToJson(rawMessage);
 
-                Console.WriteLine(messageJson);
+                return messageJson;
 
-                WriteMessageToFile("C:\\Users\\Administrator\\Documents\\PIV_Message_Files", "PIV_Messages.json", messageJson);
+               // Console.WriteLine(messageJson);
+
+                //WriteMessageToFile("C:\\Users\\jamessm\\Downloads\\PIV_Message_Files", "PIV_Messages.json", messageJson);
             }
 
-            if (rawMessage.StartsWith(ServerFrames.ERROR.ToString()))
-            {
-                WriteMessageToFile("C:\\Users\\Administrator\\Documents\\PIV_Error_Files", "PIV_Errors.json", rawMessage);
-            }
+            return "";
+            //if (rawMessage.StartsWith(ServerFrames.ERROR.ToString()))
+            //{
+            //  //  WriteMessageToFile("C:\\Users\\jamessm\\Downloads\\PIV_Error_Files", "PIV_Errors.json", rawMessage);
+            //}
 
-            if (rawMessage.StartsWith(ServerFrames.RECEIPT.ToString()))
-            {
-                //TODO
-            }
+            //if (rawMessage.StartsWith(ServerFrames.RECEIPT.ToString()))
+            //{
+            //    //TODO
+            //}
         }
     }
 }

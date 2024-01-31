@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PIV_POC_Client.AWS.SQS;
+using PIV_POC_Client.DAL.Repositories;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.Config.DAL;
@@ -50,6 +52,10 @@ namespace PIV_POC_Client.App
             services.AddTransient<IMessageProcessor, MessageProcessor>();
             services.AddTransient<IStompClientFrameWrapper, StompClientFrameWrapper>();
             services.AddTransient<IStompServerFrameWrapper, StompServerFrameWrapper>();
+
+            services.AddTransient<ISqsClientFactory, SqsClientFactory>();
+
+            services.AddTransient<ISqsRepository, SqsRepository>();
 
             services.AddTransient<IMessageService, MessageService>();
             services.AddSingleton(Configuration);

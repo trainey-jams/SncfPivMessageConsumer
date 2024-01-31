@@ -4,6 +4,6 @@ namespace PIV_POC_Client.Interfaces
 {
     public interface IMessageProcessor
     {
-        public Task Process(Guid subscriptionId, string rawMessage);
+        public Task<string> Process(Guid subscriptionId, string rawMessage);
     }
 }
