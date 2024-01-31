@@ -1,10 +1,8 @@
 ﻿using Amazon.SQS.Model;
 using Microsoft.Extensions.Options;
-using PIV_POC_Client.DAL.Repositories;
+using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Models.Config;
-using PIV_POC_Client.Models.PivMessage.Root;
-using PIV_POC_Client.Processor;
 using System.Collections.Concurrent;
 
 namespace PIV_POC_Client.App
@@ -15,20 +13,20 @@ namespace PIV_POC_Client.App
         private readonly IStompClientFrameWrapper ClientFrameWrapper;
         private readonly IMessageService MessageService;
         private readonly NotificationClientConfiguration NotificationClientConfiguration;
-        private readonly ISqsRepository SqsRepository;
+        private readonly IS3Repository S3Repository;
         
         public PIVNotificationClient(
             IWebSocketClientFactory clientFactory, 
             IStompClientFrameWrapper clientFrameWrapper,
             IMessageService messageService,
             IOptions<NotificationClientConfiguration> notificationClientConfiguration,
-            ISqsRepository sqsRepository)
+            IS3Repository s3Repository)
         {
             ClientFactory = clientFactory;
             ClientFrameWrapper = clientFrameWrapper;
             MessageService = messageService;
             NotificationClientConfiguration = notificationClientConfiguration.Value;
-            SqsRepository = sqsRepository;  
+            S3Repository = s3Repository;  
         }
 
         public async Task GetMessages()
@@ -80,10 +78,6 @@ namespace PIV_POC_Client.App
                         //worker2.Join();
                         //worker3.Join();
 
-
-
-
-
                         SendMessageBatchRequestEntry entry;
                         if (MessagesToSQS.Count > 10)
                         {
@@ -99,7 +93,7 @@ namespace PIV_POC_Client.App
                             }
                             try
                             {
-                                await SqsRepository.PublishMessageBatch(msgs);
+                                await S3Repository.SendMessageBatchToS3(msgs);
                             }
 
                             catch (Exception ex) 
@@ -107,17 +101,11 @@ namespace PIV_POC_Client.App
                             
                                 Console.WriteLine(ex.ToString());
                             }
-
-
-                           
                         }
 
                           Console.WriteLine($"Number of current threads is {System.Diagnostics.Process.GetCurrentProcess().Threads.Count}");
                     }
                 }, token);
-
-                ///pseudo code
-                ///
 
                 Console.ReadKey();
                 cancellationToken.Cancel();

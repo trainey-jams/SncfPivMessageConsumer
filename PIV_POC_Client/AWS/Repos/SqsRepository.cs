@@ -2,7 +2,7 @@
 using PIV_POC_Client.Interfaces;
 using System.Linq.Expressions;
 
-namespace PIV_POC_Client.DAL.Repositories
+namespace PIV_POC_Client.AWS.Repos
 {
     public class SqsRepository : ISqsRepository
     {
@@ -16,7 +16,7 @@ namespace PIV_POC_Client.DAL.Repositories
         public async Task PublishMessage(string message)
         {
             message = message.Replace('\x0', ' ');
-            
+
             var request = new SendMessageRequest
             {
                 MessageBody = message,
@@ -30,7 +30,7 @@ namespace PIV_POC_Client.DAL.Repositories
 
         public async Task PublishMessageBatch(List<SendMessageBatchRequestEntry> messages)
         {
-          //  message = message.Replace('\x0', ' ');
+            //  message = message.Replace('\x0', ' ');
 
             var request = new SendMessageBatchRequest
             {
