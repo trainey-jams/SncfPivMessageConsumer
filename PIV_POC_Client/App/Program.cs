@@ -5,6 +5,7 @@ using PIV_POC_Client.AWS.ClientFactories.S3;
 using PIV_POC_Client.AWS.ClientFactories.SQS;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
+using PIV_POC_Client.IOC;
 using PIV_POC_Client.Mappers;
 using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.Config.AWS;
@@ -58,6 +59,9 @@ namespace PIV_POC_Client.App
             services.AddTransient<ISqsClientFactory, SqsClientFactory>();
             services.AddTransient<IS3ClientFactory, S3ClientFactory>();
 
+            services.RegisterDynamoDb(Configuration);
+
+            services.AddTransient<IDynamoDbRepository, DynamoDbRepository>();
             services.AddTransient<ISqsRepository, SqsRepository>();
             services.AddTransient<IS3Repository, S3Repository>();
 

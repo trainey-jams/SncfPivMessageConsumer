@@ -1,7 +1,10 @@
-﻿namespace PIV_POC_Client.Models.PivMessage
+﻿using Newtonsoft.Json;
+
+namespace PIV_POC_Client.Models.PivMessage
 {
     public class Relation
     {
-        public string codeRelation { get; set; } = string.Empty;
+        [JsonProperty("codeRelation")]
+        public string RelationCode { get; set; } = string.Empty;
     }
 }

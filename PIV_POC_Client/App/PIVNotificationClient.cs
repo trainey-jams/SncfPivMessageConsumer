@@ -13,17 +13,20 @@ namespace PIV_POC_Client.App
         private readonly IActiveMQMapper Mapper;
         private readonly IS3Repository S3Repository;
         private readonly ISqsRepository SqsRepository;
+        private readonly IDynamoDbRepository DynamoDbRepository;
 
         public PIVNotificationClient(
             IOpenWireSessionFactory sessionFactory, 
             IActiveMQMapper mapper,
             IS3Repository s3Repository,
-            ISqsRepository sqsRepository)
+            ISqsRepository sqsRepository,
+            IDynamoDbRepository dynamoDbRepository)
         {
             SessionFactory = sessionFactory;
             Mapper = mapper;
             S3Repository = s3Repository; 
             SqsRepository = sqsRepository;
+            DynamoDbRepository = dynamoDbRepository;
         }
 
         public async Task GetMessages()
@@ -42,12 +45,21 @@ namespace PIV_POC_Client.App
             {
                 var msg = await consumer.ReceiveAsync() as ActiveMQMessage;
 
-                PivMessageRoot root = Mapper.Map(msg);
+          
 
-                string payload = System.Text.Encoding.UTF8.GetString(msg.Content);
-                root.MessageBody = JsonConvert.DeserializeObject<MessageBody>(payload);
+                try
+                {
+                    PivMessageRoot root = Mapper.Map(msg);
 
-                await SqsRepository.PublishMessage(JsonConvert.SerializeObject(root));
+                    await DynamoDbRepository.SaveAsync(root);
+                }
+
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+             
+               // await SqsRepository.PublishMessage(JsonConvert.SerializeObject(root));
             }, token);
 
             Console.ReadKey();

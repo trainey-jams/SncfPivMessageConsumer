@@ -2,18 +2,18 @@
 
 namespace PIV_POC_Client.Models.PivMessage
 {
-    public class AffichageIV
+    public class DisplayableInformationVoyager
     {
         [JsonProperty("indicateurAffichableTableauxGare")]
         public bool indicateurAffichableTableauxGare { get; set; }
 
         [JsonProperty("indicateurAffichableItineraire")]
-        public bool DisplayableRouteIndicator { get; set; }
+        public bool RouteDisplayable { get; set; }
 
         [JsonProperty("indicateurAffichableTrajetEnregistre")]
         public bool indicateurAffichableTrajetEnregistre { get; set; }
 
         [JsonProperty("indicateurAffichableDetailTrain")]
-        public bool indicateurAffichableDetailTrain { get; set; }
+        public bool TrainDetailsDisplayable { get; set; }
     }
 }

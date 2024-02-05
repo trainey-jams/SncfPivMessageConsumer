@@ -4,7 +4,8 @@ namespace PIV_POC_Client.Models.PivMessage
 {
     public class TransitionEvent
     {
-        public AffichageIV affichageIV { get; set; } = new AffichageIV();
+        [JsonProperty("affichageIV")]
+        public DisplayableInformationVoyager DisplayableInformationVoyager { get; set; } = new DisplayableInformationVoyager();
 
         [JsonProperty("composition")]
         public ServiceComposition ServiceComposition { get; set; } = new ServiceComposition();
@@ -24,11 +25,12 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("dateHeureInterne")]
         public DateTime InternalDateTime { get; set; }
 
-
-        public string typeAffichage { get; set; } = string.Empty;
+        [JsonProperty("typeAffichage")]
+        public string DisplayType { get; set; } = string.Empty;
 
         public bool indicateurAdaptation { get; set; }
 
-        public string planTransportSource { get; set; } = string.Empty;
+        [JsonProperty("planTransportSource")]
+        public string TransportPlanSource { get; set; } = string.Empty;
     }
 }

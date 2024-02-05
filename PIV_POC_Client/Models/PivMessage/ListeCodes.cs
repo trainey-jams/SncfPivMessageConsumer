@@ -1,8 +1,13 @@
-﻿namespace PIV_POC_Client.Models.PivMessage
+﻿using Newtonsoft.Json;
+
+namespace PIV_POC_Client.Models.PivMessage
 {
     public class ListeCodes
     {
-        public List<Valeur> valeur { get; set; } = new List<Valeur>();
-        public string typeDefaut { get; set; } = string.Empty;
+        [JsonProperty("valeur")]
+        public List<Valeur> ListOfValues { get; set; } = new List<Valeur>();
+
+        [JsonProperty("typeDefaut")]
+        public string DefaultType { get; set; } = string.Empty;
     }
 }

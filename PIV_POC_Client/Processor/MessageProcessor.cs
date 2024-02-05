@@ -45,16 +45,16 @@ namespace PIV_POC_Client.Processor
         {
             PivMessageRoot messageRoot = new PivMessageRoot();
 
-            if (rawMessage.StartsWith(ServerFrames.MESSAGE.ToString()))
-            {
-                string messageJson = ParseStompMessageToJson(rawMessage);
+            //if (rawMessage.StartsWith(ServerFrames.MESSAGE.ToString()))
+            //{
+            //    string messageJson = ParseStompMessageToJson(rawMessage);
 
-                return messageJson;
+            //    return messageJson;
 
-                // Console.WriteLine(messageJson);
+            //    // Console.WriteLine(messageJson);
 
-                //WriteMessageToFile("C:\\Users\\jamessm\\Downloads\\PIV_Message_Files", "PIV_Messages.json", messageJson);
-            }
+            //    //WriteMessageToFile("C:\\Users\\jamessm\\Downloads\\PIV_Message_Files", "PIV_Messages.json", messageJson);
+            //}
 
             return "";
             //if (rawMessage.StartsWith(ServerFrames.ERROR.ToString()))

@@ -23,5 +23,21 @@ namespace PIV_POC_Client.Mappers
 
             return root;
         }
+
+        public PivMessageRoot MapToDTO(ActiveMQMessage rawMessage)
+        {
+            PivMessageRoot root = new PivMessageRoot();
+
+            root.Priority = rawMessage.Priority;
+            root.BrokerInTime = rawMessage.BrokerInTime;
+            root.Expiration = rawMessage.Expiration.ToString();
+            root.Destination = rawMessage.Destination.ToString();
+            root.PartitionKey = rawMessage.MessageId.ToString();
+
+            string payload = System.Text.Encoding.UTF8.GetString(rawMessage.Content);
+            root.MessageBody = JsonConvert.DeserializeObject<MessageBody>(payload);
+
+            return root;
+        }
     }
 }

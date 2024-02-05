@@ -1,9 +1,13 @@
-﻿namespace PIV_POC_Client.Models.PivMessage
+﻿using Newtonsoft.Json;
+
+namespace PIV_POC_Client.Models.PivMessage
 {
     public class Region
     {
-        public string code { get; set; } = string.Empty;
+        [JsonProperty("code")]
+        public string Code { get; set; } = string.Empty;
 
-        public string libelle { get; set; } = string.Empty;
+        [JsonProperty("libelle")]
+        public string Label { get; set; } = string.Empty;
     }
 }

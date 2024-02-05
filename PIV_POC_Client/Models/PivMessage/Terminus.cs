@@ -6,11 +6,14 @@ namespace PIV_POC_Client.Models.PivMessage
     {
         public ListeCoordonnees listeCoordonnees { get; set; } = new ListeCoordonnees();
 
-        public Commune commune { get; set; } = new Commune();
+        [JsonProperty("commune")]
+        public Commune Commune { get; set; } = new Commune();
 
-        public Department departement { get; set; } = new Department();
+        [JsonProperty("departement")]
+        public Department Departement { get; set; } = new Department();
 
-        public Region region { get; set; } = new Region();
+        [JsonProperty("region")]
+        public Region Region { get; set; } = new Region();
 
         [JsonProperty("pays")]
         public Country Country { get; set; } = new Country();

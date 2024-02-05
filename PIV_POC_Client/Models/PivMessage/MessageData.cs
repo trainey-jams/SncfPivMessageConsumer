@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Amazon.DynamoDBv2.DataModel;
+using Newtonsoft.Json;
+using PIV_POC_Client.AWS.Utility;
+using PIV_POC_Client.Models.Enums;
 using System.Text.Json;
 
 namespace PIV_POC_Client.Models.PivMessage
@@ -32,7 +35,8 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("listeArretsDesserte")]
         public ServiceCallingPoints ServiceCallingPoints { get; set; } = new ServiceCallingPoints();
 
-        public AffichageIV affichageIV { get; set; } = new AffichageIV();
+        [JsonProperty("affichageIV")]
+        public DisplayableInformationVoyager DisplayableInformationVoyager { get; set; } = new DisplayableInformationVoyager();
 
         [JsonProperty("operateur")]
         public Operator Operator { get; set; } = new Operator();
@@ -46,11 +50,11 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("parcours")]
         public Journey Journey { get; set; } = new Journey();
 
-        public Relation relation { get; set; } = new Relation();
+        [JsonProperty("relation")]
+        public Relation Relation { get; set; } = new Relation();
 
-        public string numero { get; set; } = string.Empty;
-
-        public bool indicateurAdaptation { get; set; }
+        [JsonProperty("numero")]
+        public string Number { get; set; } = string.Empty;
 
         [JsonProperty("dateDerniereModification")]
         public DateTime LastModificationDate { get; set; }
@@ -64,10 +68,15 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("natureTrain")]
         public string NatureTrain { get; set; } = string.Empty;
 
-        public string planTransportSource { get; set; } = string.Empty;
+        [DynamoDBProperty(typeof(DynamoEnumStringConverter<TransportPlanSource>))]
+        [JsonProperty("planTransportSource")]
+        public TransportPlanSource TransportPlanSource { get; set; }
 
+        [JsonProperty("indicateurAdaptation")] // indicates whether traffic was impacted by PTP or not.
+        public bool AdaptationIndicator { get; set; }
 
-        public bool indicateurCourseDeReference { get; set; }
+        [JsonProperty("indicateurCourseDeReference")]
+        public bool CourseOfReferenceIndicator { get; set; }
 
         public string codeTransporteurResponsable { get; set; } = string.Empty;
 

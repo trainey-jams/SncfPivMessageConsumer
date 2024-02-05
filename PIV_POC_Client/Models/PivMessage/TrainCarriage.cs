@@ -7,7 +7,8 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("listePortes")]
         public DoorList DoorList { get; set; } = new DoorList();
 
-        public string categorie { get; set; } = string.Empty;
+        [JsonProperty("categorie")]
+        public string Class { get; set; } = string.Empty;
 
         [JsonProperty("longueur")]
         public string Length { get; set; } = string.Empty;
