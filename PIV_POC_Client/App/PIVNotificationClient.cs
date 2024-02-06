@@ -1,9 +1,11 @@
-﻿using Apache.NMS.ActiveMQ.Commands;
+﻿using Apache.NMS;
+using Apache.NMS.ActiveMQ.Commands;
 using Newtonsoft.Json;
 using PIV_POC_Client._OpenWire;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Models.PivMessage.Root;
+using System.Diagnostics;
 
 namespace PIV_POC_Client.App
 {
@@ -31,6 +33,11 @@ namespace PIV_POC_Client.App
 
         public async Task GetMessages()
         {
+            int proccessedMessages = 0;
+            var timer = new Stopwatch();
+            timer.Start();
+
+
             using var session = await SessionFactory.GetSession();
 
             using var dest = await session.GetTopicAsync("VirtualTopic.circulationsEnrichies.v2");
@@ -43,23 +50,36 @@ namespace PIV_POC_Client.App
 
             var task = Task.Run(async () =>
             {
-                var msg = await consumer.ReceiveAsync() as ActiveMQMessage;
-
-          
-
-                try
+                while (!token.IsCancellationRequested)
                 {
-                    PivMessageRoot root = Mapper.Map(msg);
+                    try
+                    {
+                        IDestination statusQueue = session.CreateTemporaryTopic();
+                        IMessageConsumer consumer = session.CreateConsumer(statusQueue);
+                        IDestination query = session.GetQueue("ActiveMQ.Statistics.VirtualTopic.circulationsEnrichies.v2");
+                        IMessage msg = session.CreateMessage();
+                        IMessageProducer producer = session.CreateProducer(query);
+                        msg.NMSReplyTo = statusQueue;
+                        producer.Send(msg);
 
-                    await DynamoDbRepository.SaveAsync(root);
+                        IMapMessage reply = (IMapMessage)consumer.Receive();
+
+                        //var msg = await consumer.ReceiveAsync() as ActiveMQMessage;
+
+                        //PivMessageRoot root = Mapper.Map(msg);
+
+                        //await DynamoDbRepository.SaveAsync(root);
+
+                        //proccessedMessages++;
+                    }
+
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                    }
                 }
 
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
-             
-               // await SqsRepository.PublishMessage(JsonConvert.SerializeObject(root));
+                // await SqsRepository.PublishMessage(JsonConvert.SerializeObject(root));
             }, token);
 
             Console.ReadKey();
@@ -71,6 +91,9 @@ namespace PIV_POC_Client.App
                 Console.WriteLine("*********************************************************");
                 Console.WriteLine("Task cancelled by user, disconnecting from message stream.");
                 Console.WriteLine("*********************************************************");
+
+                timer.Stop();
+                Console.WriteLine($"{proccessedMessages} messages have been processed in {timer.ElapsedMilliseconds/1000} seconds.");
 
                 await Task.Delay(5000);
             }

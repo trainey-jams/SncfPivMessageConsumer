@@ -35,9 +35,9 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("circulation.marque.Code")]
         public string BrandCode { get; set; } = string.Empty;
 
-        [DynamoDBProperty(typeof(DynamoEnumStringConverter<ServiceEvents>))]
+      //rv  [DynamoDBProperty(typeof(DynamoEnumStringConverter<ServiceEvent>))]
         [JsonProperty("circulation.evenement[]")]
-        public List<ServiceEvents> ServiceEvents { get; set; } = new List<ServiceEvents>();
+        public List<ServiceEvent> ServiceEvents { get; set; } = new List<ServiceEvent>();
 
         public string NotificationTrigger { get; set; } = string.Empty;
 

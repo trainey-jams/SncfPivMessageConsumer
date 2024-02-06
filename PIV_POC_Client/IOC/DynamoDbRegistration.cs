@@ -24,6 +24,7 @@ namespace PIV_POC_Client.IOC
                 return new DynamoDBOperationConfig
                 {
                     OverrideTableName = settings.TableName
+                    
                 };
             });
 
@@ -32,7 +33,7 @@ namespace PIV_POC_Client.IOC
                 if (settings.LocalMode)
                 {
                     var dummyCredentials = new SessionAWSCredentials(settings.AccessKey,settings.SecretKey,settings.SessionToken);
-                    return new AmazonDynamoDBClient(dummyCredentials, config);
+                    return new AmazonDynamoDBClient(dummyCredentials,config);
                 }
 
                 return new AmazonDynamoDBClient();

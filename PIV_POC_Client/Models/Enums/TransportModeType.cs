@@ -8,6 +8,6 @@ namespace PIV_POC_Client.Models.Enums
         FERRE,
 
         [JsonProperty("ROUTIER")]
-        Road
+        ROUTIER
     }
 }
