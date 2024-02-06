@@ -5,7 +5,7 @@ namespace PIV_POC_Client.AWS.Repos
 {
     public interface IDynamoDbRepository
     {
-        Task SaveAsync(PivMessageRoot messageRoot);
+        public Task<bool> SaveAsync(PivMessageRoot messageRoot);
     }
 
     public class DynamoDbRepository : IDynamoDbRepository
@@ -19,9 +19,21 @@ namespace PIV_POC_Client.AWS.Repos
             Config = config;
         }
 
-        public async Task SaveAsync(PivMessageRoot messageRoot)
+        public async Task<bool> SaveAsync(PivMessageRoot messageRoot)
         {
-            await Context.SaveAsync(messageRoot, Config);
+            try
+            {
+                await Context.SaveAsync(messageRoot, Config);
+
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+
+                return false;
+            }
         }
     }
 }

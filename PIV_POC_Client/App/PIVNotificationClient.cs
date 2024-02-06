@@ -37,8 +37,7 @@ namespace PIV_POC_Client.App
             var timer = new Stopwatch();
             timer.Start();
 
-
-            using var session = await SessionFactory.GetSession();
+            using var session = await SessionFactory.GetSession(AcknowledgementMode.IndividualAcknowledge);
 
             using var dest = await session.GetTopicAsync("VirtualTopic.circulationsEnrichies.v2");
             using var consumer = await session.CreateConsumerAsync(dest);
@@ -54,23 +53,26 @@ namespace PIV_POC_Client.App
                 {
                     try
                     {
-                        IDestination statusQueue = session.CreateTemporaryTopic();
-                        IMessageConsumer consumer = session.CreateConsumer(statusQueue);
-                        IDestination query = session.GetQueue("ActiveMQ.Statistics.VirtualTopic.circulationsEnrichies.v2");
-                        IMessage msg = session.CreateMessage();
-                        IMessageProducer producer = session.CreateProducer(query);
-                        msg.NMSReplyTo = statusQueue;
-                        producer.Send(msg);
+                        //IDestination statusQueue = session.CreateTemporaryTopic();
+                        //IMessageConsumer consumer = session.CreateConsumer(statusQueue);
+                        //IDestination query = session.GetQueue("ActiveMQ.Statistics.VirtualTopic.circulationsEnrichies.v2");
+                        //IMessage msg = session.CreateMessage();
+                        //IMessageProducer producer = session.CreateProducer(query);
+                        //msg.NMSReplyTo = statusQueue;
+                        //producer.Send(msg);
 
-                        IMapMessage reply = (IMapMessage)consumer.Receive();
+                        //IMapMessage reply = (IMapMessage)consumer.Receive();
 
-                        //var msg = await consumer.ReceiveAsync() as ActiveMQMessage;
+                        var msg = await consumer.ReceiveAsync() as ActiveMQMessage;
 
-                        //PivMessageRoot root = Mapper.Map(msg);
+                        PivMessageRoot root = Mapper.Map(msg);
 
-                        //await DynamoDbRepository.SaveAsync(root);
+                        if (await DynamoDbRepository.SaveAsync(root))
+                        {
+                            await msg.AcknowledgeAsync();
 
-                        //proccessedMessages++;
+                            proccessedMessages++;
+                        };
                     }
 
                     catch(Exception ex)
