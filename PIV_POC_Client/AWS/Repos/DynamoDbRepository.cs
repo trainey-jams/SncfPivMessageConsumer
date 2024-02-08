@@ -23,6 +23,8 @@ namespace PIV_POC_Client.AWS.Repos
         {
             try
             {
+                messageRoot.ProcTime = DateTime.Now;
+
                 await Context.SaveAsync(messageRoot, Config);
 
                 return true;

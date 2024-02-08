@@ -1,4 +1,5 @@
 ﻿using Apache.NMS;
+using Apache.NMS.ActiveMQ;
 using Apache.NMS.ActiveMQ.Commands;
 using Newtonsoft.Json;
 using PIV_POC_Client._OpenWire;
@@ -6,6 +7,7 @@ using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Models.PivMessage.Root;
 using System.Diagnostics;
+using System.Timers;
 
 namespace PIV_POC_Client.App
 {
@@ -16,6 +18,10 @@ namespace PIV_POC_Client.App
         private readonly IS3Repository S3Repository;
         private readonly ISqsRepository SqsRepository;
         private readonly IDynamoDbRepository DynamoDbRepository;
+        
+        private static int processedMessages = 0;
+        private static int totalMessages = 0;
+        private static long totalSeconds = 0;
 
         public PIVNotificationClient(
             IOpenWireSessionFactory sessionFactory, 
@@ -31,16 +37,29 @@ namespace PIV_POC_Client.App
             DynamoDbRepository = dynamoDbRepository;
         }
 
+        private static void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            Console.WriteLine($"{processedMessages} messages processed in last 30 seconds.");
+            processedMessages = 0;
+        }
+
         public async Task GetMessages()
         {
-            int proccessedMessages = 0;
-            var timer = new Stopwatch();
-            timer.Start();
+            double interval = 30000.0;
+            var timer = new System.Timers.Timer(interval);
+            timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            timer.AutoReset = true;
+            timer.Enabled = true;
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            List<ActiveMQMessage> messages = new List<ActiveMQMessage>();
 
             using var session = await SessionFactory.GetSession(AcknowledgementMode.IndividualAcknowledge);
 
             using var dest = await session.GetTopicAsync("VirtualTopic.circulationsEnrichies.v2");
-            using var consumer = await session.CreateConsumerAsync(dest);
+            using MessageConsumer consumer = (MessageConsumer)await session.CreateConsumerAsync(dest);
 
             var cancellationToken = new CancellationTokenSource();
             var token = cancellationToken.Token;
@@ -51,28 +70,36 @@ namespace PIV_POC_Client.App
             {
                 while (!token.IsCancellationRequested)
                 {
+
                     try
                     {
-                        //IDestination statusQueue = session.CreateTemporaryTopic();
-                        //IMessageConsumer consumer = session.CreateConsumer(statusQueue);
-                        //IDestination query = session.GetQueue("ActiveMQ.Statistics.VirtualTopic.circulationsEnrichies.v2");
-                        //IMessage msg = session.CreateMessage();
-                        //IMessageProducer producer = session.CreateProducer(query);
-                        //msg.NMSReplyTo = statusQueue;
-                        //producer.Send(msg);
-
-                        //IMapMessage reply = (IMapMessage)consumer.Receive();
-
-                        var msg = await consumer.ReceiveAsync() as ActiveMQMessage;
-
-                        PivMessageRoot root = Mapper.Map(msg);
-
-                        if (await DynamoDbRepository.SaveAsync(root))
+                        for (int i = 0; i < 50; i++)
                         {
-                            await msg.AcknowledgeAsync();
+                            var rawMessage = await consumer.ReceiveAsync() as ActiveMQMessage;
 
-                            proccessedMessages++;
-                        };
+                            messages.Add(rawMessage);
+                        }
+
+                        Console.WriteLine($"There are {consumer.UnconsumedMessageCount} messages waiting to be consumed.");
+
+                        Parallel.ForEach(messages, async rawMessage =>
+                        {
+                            PivMessageRoot mappedMessage = Mapper.Map(rawMessage);
+
+                            if (await DynamoDbRepository.SaveAsync(mappedMessage))
+                            {
+                                await rawMessage.AcknowledgeAsync();
+                            };
+                        });
+
+                        processedMessages+=50;
+                        totalMessages+=50;
+                        messages.Clear();
+
+                        if (stopwatch.ElapsedMilliseconds/1000 >= 60)
+                        {
+                            cancellationToken.Cancel();
+                        }
                     }
 
                     catch(Exception ex)
@@ -85,7 +112,11 @@ namespace PIV_POC_Client.App
             }, token);
 
             Console.ReadKey();
+    
+            totalSeconds = stopwatch.ElapsedMilliseconds / 1000;
+            
             cancellationToken.Cancel();
+
 
             if (token.IsCancellationRequested)
             {
@@ -95,48 +126,10 @@ namespace PIV_POC_Client.App
                 Console.WriteLine("*********************************************************");
 
                 timer.Stop();
-                Console.WriteLine($"{proccessedMessages} messages have been processed in {timer.ElapsedMilliseconds/1000} seconds.");
+                Console.WriteLine($"{totalMessages} messages have been processed in {totalSeconds} seconds.");
 
                 await Task.Delay(5000);
             }
-
-            // ConcurrentQueue<SendMessageBatchRequestEntry> MessagesToSQS = new ConcurrentQueue<SendMessageBatchRequestEntry>();
-            //Thread worker1 =
-            //                new Thread(async async =>
-            //                {
-            //                    SendMessageBatchRequestEntry e = await MessageService.ProcessMessage(client, guid1);
-
-            //                    if (!string.IsNullOrWhiteSpace(e.MessageBody))
-            //                    {
-            //                        MessagesToSQS.Enqueue(e);
-            //                    }
-
-            //                });
-
-            //SendMessageBatchRequestEntry entry;
-            //if (MessagesToSQS.Count > 10)
-            //{
-            //    List<SendMessageBatchRequestEntry> msgs = new List<SendMessageBatchRequestEntry>();
-
-            //    for (int i = 0; i < 3; i++)
-            //    {
-            //        if (MessagesToSQS.TryDequeue(out entry))
-            //        {
-            //            msgs.Add(entry);
-            //        }
-
-            //    }
-            //    try
-            //    {
-            //        await S3Repository.SendMessageBatchToS3(msgs);
-            //    }
-
-            //    catch (Exception ex)
-            //    {
-
-            //        Console.WriteLine(ex.ToString());
-            //    }
-            //}
         }
     }
 }

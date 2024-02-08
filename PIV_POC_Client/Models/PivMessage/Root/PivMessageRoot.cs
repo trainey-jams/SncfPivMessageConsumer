@@ -6,9 +6,11 @@ namespace PIV_POC_Client.Models.PivMessage.Root
     {
         public string Expiration { get; set; } = string.Empty;
 
-        public long BrokerInTime { get; set; }
+        public DateTime BrokerInTime { get; set; }
 
-        public long BrokerOutTime { get; set; }
+        public DateTime BrokerOutTime { get; set; }
+
+        public DateTime ProcTime { get; set; }  
 
         public string Destination { get; set; } = string.Empty;
 
