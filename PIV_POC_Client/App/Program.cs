@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Amazon;
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
+using Amazon.SQS;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PIV_POC_Client._OpenWire;
-using PIV_POC_Client.AWS.ClientFactories.S3;
-using PIV_POC_Client.AWS.ClientFactories.SQS;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.IOC;
@@ -45,7 +48,6 @@ namespace PIV_POC_Client.App
             Configuration = builder.Build();
             
             services.Configure<AWSCredentialConfig>(Configuration.GetSection("AWSCredentialConfig"));
-            services.Configure<S3Config>(Configuration.GetSection("S3Config"));
             services.Configure<SqsConfig>(Configuration.GetSection("SqsConfig"));
 
             services.Configure<OpenWireConnectionConfig>(Configuration.GetSection("OpenWireConnectionConfig"));
@@ -56,14 +58,19 @@ namespace PIV_POC_Client.App
             services.AddTransient<IOpenWireConnectionFactory, OpenWireConnectionFactory>();
             services.AddTransient<IOpenWireSessionFactory, OpenWireSessionFactory>();
 
-            services.AddTransient<ISqsClientFactory, SqsClientFactory>();
-            services.AddTransient<IS3ClientFactory, S3ClientFactory>();
+            services.AddTransient(sp => new AWSOptions
+            {
+                Credentials = new CredentialProfileStoreChain().TryGetAWSCredentials("default", out var defaultCredentials)
+                ? defaultCredentials
+                : new InstanceProfileAWSCredentials(),
+                Region = RegionEndpoint.EUWest1
+            });
 
+            services.AddAWSService<IAmazonSQS>();
             services.RegisterDynamoDb(Configuration);
 
             services.AddTransient<IDynamoDbRepository, DynamoDbRepository>();
             services.AddTransient<ISqsRepository, SqsRepository>();
-            services.AddTransient<IS3Repository, S3Repository>();
 
             services.AddTransient<IMessageService, MessageService>();
             services.AddSingleton(Configuration);

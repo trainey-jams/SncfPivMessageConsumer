@@ -6,6 +6,7 @@ using PIV_POC_Client._OpenWire;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Models.PivMessage.Root;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Timers;
 
@@ -15,24 +16,22 @@ namespace PIV_POC_Client.App
     {
         private readonly IOpenWireSessionFactory SessionFactory;
         private readonly IActiveMQMapper Mapper;
-        private readonly IS3Repository S3Repository;
         private readonly ISqsRepository SqsRepository;
         private readonly IDynamoDbRepository DynamoDbRepository;
         
         private static int processedMessages = 0;
         private static int totalMessages = 0;
         private static long totalSeconds = 0;
+        private static int FailedMessages = 0;
 
         public PIVNotificationClient(
             IOpenWireSessionFactory sessionFactory, 
             IActiveMQMapper mapper,
-            IS3Repository s3Repository,
             ISqsRepository sqsRepository,
             IDynamoDbRepository dynamoDbRepository)
         {
             SessionFactory = sessionFactory;
             Mapper = mapper;
-            S3Repository = s3Repository; 
             SqsRepository = sqsRepository;
             DynamoDbRepository = dynamoDbRepository;
         }
@@ -50,7 +49,7 @@ namespace PIV_POC_Client.App
             timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             timer.AutoReset = true;
             timer.Enabled = true;
-
+           
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -70,7 +69,6 @@ namespace PIV_POC_Client.App
             {
                 while (!token.IsCancellationRequested)
                 {
-
                     try
                     {
                         for (int i = 0; i < 50; i++)
@@ -80,35 +78,39 @@ namespace PIV_POC_Client.App
                             messages.Add(rawMessage);
                         }
 
-                        Console.WriteLine($"There are {consumer.UnconsumedMessageCount} messages waiting to be consumed.");
-
                         Parallel.ForEach(messages, async rawMessage =>
                         {
                             PivMessageRoot mappedMessage = Mapper.Map(rawMessage);
 
-                            if (await DynamoDbRepository.SaveAsync(mappedMessage))
+                            string mappedMessageStr = JsonConvert.SerializeObject(mappedMessage);
+
+                            if (await SqsRepository.PublishMessage(mappedMessageStr))
                             {
                                 await rawMessage.AcknowledgeAsync();
-                            };
+                            }
+                            else
+                            {
+                                FailedMessages++;
+                                Console.WriteLine($"There are {FailedMessages} failed messages.");
+                            }
                         });
 
-                        processedMessages+=50;
+                        Console.WriteLine($"Processed message batch. There are now {consumer.UnconsumedMessageCount} unconsumed messages.");
+
+                        processedMessages +=50;
                         totalMessages+=50;
                         messages.Clear();
-
-                        if (stopwatch.ElapsedMilliseconds/1000 >= 60)
-                        {
-                            cancellationToken.Cancel();
-                        }
                     }
 
                     catch(Exception ex)
                     {
                         Console.WriteLine(ex.ToString());
+
+                        cancellationToken.Cancel();
                     }
                 }
 
-                // await SqsRepository.PublishMessage(JsonConvert.SerializeObject(root));
+               
             }, token);
 
             Console.ReadKey();

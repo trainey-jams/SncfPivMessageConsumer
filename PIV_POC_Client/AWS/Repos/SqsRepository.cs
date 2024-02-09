@@ -1,47 +1,40 @@
-﻿using Amazon.SQS.Model;
+﻿using Amazon.SQS;
+using Amazon.SQS.Model;
+using Microsoft.Extensions.Options;
 using PIV_POC_Client.Interfaces;
+using PIV_POC_Client.Models.Config;
 using System.Linq.Expressions;
+using System.Net;
 
 namespace PIV_POC_Client.AWS.Repos
 {
     public class SqsRepository : ISqsRepository
     {
-        private readonly ISqsClientFactory _sqsClientFactory;
+        private readonly IAmazonSQS SqsClient;
+        private readonly SqsConfig SqsConfig;
 
-        public SqsRepository(ISqsClientFactory sqsClientFactory)
+        public SqsRepository(IAmazonSQS sqsClient, IOptions<SqsConfig> sqsConfig)
         {
-            _sqsClientFactory = sqsClientFactory ?? throw new ArgumentNullException(nameof(sqsClientFactory));
+            SqsClient = sqsClient ?? throw new ArgumentNullException(nameof(sqsClient));
+            SqsConfig = sqsConfig.Value ?? throw new ArgumentNullException(nameof(sqsConfig));
         }
 
-        public async Task PublishMessage(string message)
+        public async Task<bool> PublishMessage(string message)
         {
-            message = message.Replace('\x0', ' ');
-
             var request = new SendMessageRequest
             {
                 MessageBody = message,
-                QueueUrl = _sqsClientFactory.GetSqsQueue(),
+                QueueUrl = SqsConfig.GetSqsQueue(),
             };
 
-            var client = _sqsClientFactory.GetSqsClient();
+            var response = await SqsClient.SendMessageAsync(request);
 
-            var response = await client.SendMessageAsync(request);
-        }
-
-        public async Task PublishMessageBatch(List<SendMessageBatchRequestEntry> messages)
-        {
-            //  message = message.Replace('\x0', ' ');
-
-            var request = new SendMessageBatchRequest
+            if (response.HttpStatusCode == HttpStatusCode.OK)
             {
-                Entries = messages,
-                QueueUrl = _sqsClientFactory.GetSqsQueue()
-            };
+                return true;
+            }
 
-
-            var client = _sqsClientFactory.GetSqsClient();
-
-            var response = await client.SendMessageBatchAsync(request);
+            return false;
         }
     }
 }
