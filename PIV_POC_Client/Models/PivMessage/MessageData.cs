@@ -1,6 +1,4 @@
-﻿using Amazon.DynamoDBv2.DataModel;
-using Newtonsoft.Json;
-using PIV_POC_Client.AWS.Utility;
+﻿using Newtonsoft.Json;
 using PIV_POC_Client.Models.Enums;
 using System.Text.Json;
 
@@ -68,7 +66,7 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("natureTrain")]
         public string NatureTrain { get; set; } = string.Empty;
 
-        [DynamoDBProperty(typeof(DynamoEnumStringConverter<TransportPlanSource>))]
+      
         [JsonProperty("planTransportSource")]
         public TransportPlanSource TransportPlanSource { get; set; }
 

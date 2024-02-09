@@ -1,6 +1,6 @@
 ﻿namespace PIV_POC_Client.Models.Config.Openwire
 {
-    public class OpenWireConnectionConfig
+    public class BrokerConfig
     {
         public string UserName { get; set; } = string.Empty;
 

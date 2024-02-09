@@ -5,13 +5,13 @@ using Amazon.Runtime.CredentialManagement;
 using Amazon.SQS;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PIV_POC_Client._OpenWire;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Mappers;
 using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.Config.Openwire;
-using PIV_POC_Client.Processor;
 using PIV_POC_Client.Services;
 
 namespace PIV_POC_Client.App
@@ -27,9 +27,9 @@ namespace PIV_POC_Client.App
 
                 var serviceProvider = services.BuildServiceProvider();
 
-                var service = serviceProvider.GetService<PIVNotificationClient>();
+                var service = serviceProvider.GetService<MessageClient>();
 
-                await service.GetMessages();
+                await service.EstablishPivBrokerConnection();
             }
 
             catch (Exception ex)
@@ -44,12 +44,13 @@ namespace PIV_POC_Client.App
             var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
 
             Configuration = builder.Build();
-            
+
+            services.AddTrainlineLogging(Configuration).BuildServiceProvider();
+            services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
+
             services.Configure<SqsConfig>(Configuration.GetSection("SqsConfig"));
+            services.Configure<BrokerConfig>(Configuration.GetSection("BrokerConfig"));
 
-            services.Configure<OpenWireConnectionConfig>(Configuration.GetSection("OpenWireConnectionConfig"));
-
-            services.AddTransient<IMessageProcessor, MessageProcessor>();
             services.AddTransient<IActiveMQMapper, ActiveMQMapper>();
 
             services.AddTransient<IOpenWireConnectionFactory, OpenWireConnectionFactory>();
@@ -68,7 +69,7 @@ namespace PIV_POC_Client.App
 
             services.AddTransient<IMessageService, MessageService>();
             services.AddSingleton(Configuration);
-            services.AddSingleton<PIVNotificationClient>();
+            services.AddSingleton<MessageClient>();
         }
     }
 }

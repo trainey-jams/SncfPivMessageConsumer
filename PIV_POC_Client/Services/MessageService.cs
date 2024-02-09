@@ -1,42 +1,90 @@
-﻿using Amazon.SQS.Model;
+﻿using Apache.NMS;
+using Apache.NMS.ActiveMQ.Commands;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PIV_POC_Client.Interfaces;
-using System.Net.WebSockets;
+using PIV_POC_Client.Models.PivMessage.Root;
+using System.Timers;
 
 namespace PIV_POC_Client.Services
 {
     public class MessageService : IMessageService
     {
-        public MessageService()
+        private readonly ILogger<MessageService> Logger;
+        private readonly IActiveMQMapper Mapper;
+        private readonly ISqsRepository SqsRepository;
+
+        private static int processedMessages = 0;
+        private static int totalMessages = 0;
+        private static int FailedMessages = 0;
+
+        public MessageService(ILogger<MessageService> logger, IActiveMQMapper mapper, ISqsRepository sqsRepository)
         {
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            SqsRepository = sqsRepository ?? throw new ArgumentNullException(nameof(sqsRepository));
         }
 
-        public async Task<SendMessageBatchRequestEntry> ProcessMessage(ClientWebSocket client, Guid subscriptionId)
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            SendMessageBatchRequestEntry result = new SendMessageBatchRequestEntry();
-            try
+            Logger.LogInformation($"{processedMessages} messages processed in last 30 seconds.");
+            processedMessages = 0;
+        }
+
+        public async Task ProcessPIVMessages(IMessageConsumer consumer, CancellationToken cancellationToken)
+        {
+            double interval = 30000.0;
+            var timer = new System.Timers.Timer(interval);
+            timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            timer.AutoReset = true;
+            timer.Enabled = true;
+
+            List<ActiveMQMessage> messages = new List<ActiveMQMessage>();
+
+            var task = Task.Run(async () =>
             {
-                //string rawMessage = await ServerFrameWrapper.ReceiveMessage(client);
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        for (int i = 0; i < 50; i++)
+                        {
+                            var rawMessage = await consumer.ReceiveAsync() as ActiveMQMessage;
 
-                //Console.WriteLine($"This messages has been processed by {subscriptionId}");
+                            messages.Add(rawMessage);
+                        }
 
-                //if (string.IsNullOrWhiteSpace(rawMessage))
-                //{
-                //    return result;
-                //}
+                        Parallel.ForEach(messages, async rawMessage =>
+                        {
+                            PivMessageRoot mappedMessage = Mapper.Map(rawMessage);
 
-                //result.Id = Guid.NewGuid().ToString();
-                //result.MessageBody = await MessageProcessor.Process(subscriptionId, rawMessage);;
+                            string mappedMessageStr = JsonConvert.SerializeObject(mappedMessage);
 
+                            if (await SqsRepository.PublishMessage(mappedMessageStr))
+                            {
+                                await rawMessage.AcknowledgeAsync();
+                            }
+                            else
+                            {
+                                FailedMessages++;
+                                Logger.LogInformation($"There are {FailedMessages} failed messages.");
+                            }
+                        });
 
-                return result;
-            }
+                        // Logger.LogInformation($"Processed message batch. There are now {consumer.UnconsumedMessageCount} unconsumed messages.");
 
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message.ToString());
+                        processedMessages += 50;
+                        totalMessages += 50;
 
-                return result;
-            }
+                        messages.Clear();
+                    }
+
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex.ToString());
+                    }
+                }
+            }, cancellationToken);
         }
     }
 }

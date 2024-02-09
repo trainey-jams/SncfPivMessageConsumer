@@ -1,6 +1,4 @@
-﻿using Amazon.DynamoDBv2.DataModel;
-using Newtonsoft.Json;
-using PIV_POC_Client.AWS.Utility;
+﻿using Newtonsoft.Json;
 using PIV_POC_Client.Models.Enums;
 using System.Text.Json;
 
@@ -50,11 +48,9 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("circulation.codeMission")]
         public string CodeMission { get; set; } = string.Empty;
 
-        [DynamoDBProperty(typeof(DynamoEnumStringConverter<TransportModeCode>))]
         [JsonProperty("circulation.modeTransport.codeMode")]
         public TransportModeCode TransportModeCode { get; set; }
 
-        [DynamoDBProperty(typeof(DynamoEnumStringConverter<TransportModeType>))]
         [JsonProperty("circulation.modeTransport.typeMode")]
         public TransportModeType? TransportModeType { get; set; } 
 

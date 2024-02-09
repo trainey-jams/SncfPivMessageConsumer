@@ -9,9 +9,9 @@ namespace PIV_POC_Client._OpenWire
 
     public class OpenWireConnectionFactory : IOpenWireConnectionFactory
     {
-        private readonly OpenWireConnectionConfig Config;
+        private readonly BrokerConfig Config;
 
-        public OpenWireConnectionFactory(IOptions<OpenWireConnectionConfig> config)
+        public OpenWireConnectionFactory(IOptions<BrokerConfig> config)
         {
             Config = config.Value;
         }
