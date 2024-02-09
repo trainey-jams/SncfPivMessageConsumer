@@ -3,10 +3,8 @@ using Apache.NMS.ActiveMQ;
 using Apache.NMS.ActiveMQ.Commands;
 using Newtonsoft.Json;
 using PIV_POC_Client._OpenWire;
-using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Models.PivMessage.Root;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Timers;
 
@@ -17,7 +15,6 @@ namespace PIV_POC_Client.App
         private readonly IOpenWireSessionFactory SessionFactory;
         private readonly IActiveMQMapper Mapper;
         private readonly ISqsRepository SqsRepository;
-        private readonly IDynamoDbRepository DynamoDbRepository;
         
         private static int processedMessages = 0;
         private static int totalMessages = 0;
@@ -27,13 +24,11 @@ namespace PIV_POC_Client.App
         public PIVNotificationClient(
             IOpenWireSessionFactory sessionFactory, 
             IActiveMQMapper mapper,
-            ISqsRepository sqsRepository,
-            IDynamoDbRepository dynamoDbRepository)
+            ISqsRepository sqsRepository)
         {
             SessionFactory = sessionFactory;
             Mapper = mapper;
             SqsRepository = sqsRepository;
-            DynamoDbRepository = dynamoDbRepository;
         }
 
         private static void OnTimedEvent(object source, ElapsedEventArgs e)

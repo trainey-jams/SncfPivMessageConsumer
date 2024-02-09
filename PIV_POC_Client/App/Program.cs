@@ -8,10 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using PIV_POC_Client._OpenWire;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
-using PIV_POC_Client.IOC;
 using PIV_POC_Client.Mappers;
 using PIV_POC_Client.Models.Config;
-using PIV_POC_Client.Models.Config.AWS;
 using PIV_POC_Client.Models.Config.Openwire;
 using PIV_POC_Client.Processor;
 using PIV_POC_Client.Services;
@@ -47,7 +45,6 @@ namespace PIV_POC_Client.App
 
             Configuration = builder.Build();
             
-            services.Configure<AWSCredentialConfig>(Configuration.GetSection("AWSCredentialConfig"));
             services.Configure<SqsConfig>(Configuration.GetSection("SqsConfig"));
 
             services.Configure<OpenWireConnectionConfig>(Configuration.GetSection("OpenWireConnectionConfig"));
@@ -67,9 +64,6 @@ namespace PIV_POC_Client.App
             });
 
             services.AddAWSService<IAmazonSQS>();
-            services.RegisterDynamoDb(Configuration);
-
-            services.AddTransient<IDynamoDbRepository, DynamoDbRepository>();
             services.AddTransient<ISqsRepository, SqsRepository>();
 
             services.AddTransient<IMessageService, MessageService>();
