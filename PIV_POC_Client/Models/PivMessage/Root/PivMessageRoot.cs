@@ -21,13 +21,4 @@ namespace PIV_POC_Client.Models.PivMessage.Root
         [JsonProperty("content")]
         public MessageBody MessageBody { get; set; } = new MessageBody();
     }
-
-    public class MessageBody
-    {
-        [JsonProperty("messageTime")]
-        public DateTime MessageDate { get; set; }
-
-        [JsonProperty("objects")]
-        public List<PivMessageObject> MessageObjects { get; set; } = new List<PivMessageObject>();
-    }
 }
