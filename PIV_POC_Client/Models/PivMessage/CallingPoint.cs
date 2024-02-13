@@ -23,6 +23,9 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("quai")]
         public Platform Platform { get; set; } = new Platform();
 
+        [JsonProperty("listeMessagesConjoncturels")]
+        public SituationalMessages SituationalMessages { get; set;} = new SituationalMessages();
+
         [JsonProperty("dureeStationnement")]
         public int? PlannedStopDurationMins { get; set; }
 

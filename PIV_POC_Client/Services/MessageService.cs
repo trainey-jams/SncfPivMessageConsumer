@@ -1,8 +1,10 @@
 ﻿using Apache.NMS;
 using Apache.NMS.ActiveMQ.Commands;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PIV_POC_Client.Interfaces;
+using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.PivMessage.Root;
 using System.Timers;
 
@@ -11,6 +13,7 @@ namespace PIV_POC_Client.Services
     public class MessageService : IMessageService
     {
         private readonly ILogger<MessageService> Logger;
+        private readonly MessageServiceConfig ServiceConfig;
         private readonly IActiveMQMapper Mapper;
         private readonly ISqsRepository SqsRepository;
 
@@ -18,9 +21,10 @@ namespace PIV_POC_Client.Services
         private static int totalMessages = 0;
         private static int FailedMessages = 0;
 
-        public MessageService(ILogger<MessageService> logger, IActiveMQMapper mapper, ISqsRepository sqsRepository)
+        public MessageService(ILogger<MessageService> logger, IOptions<MessageServiceConfig> serviceConfig, IActiveMQMapper mapper, ISqsRepository sqsRepository)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            ServiceConfig = serviceConfig.Value ?? throw new ArgumentNullException(nameof(serviceConfig));
             Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             SqsRepository = sqsRepository ?? throw new ArgumentNullException(nameof(sqsRepository));
         }
@@ -47,7 +51,7 @@ namespace PIV_POC_Client.Services
                 {
                     try
                     {
-                        for (int i = 0; i < 50; i++)
+                        for (int i = 0; i < ServiceConfig.BatchSize; i++)
                         {
                             var rawMessage = await consumer.ReceiveAsync() as ActiveMQMessage;
 

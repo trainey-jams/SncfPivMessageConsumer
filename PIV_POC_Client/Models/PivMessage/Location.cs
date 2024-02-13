@@ -4,21 +4,29 @@ namespace PIV_POC_Client.Models.PivMessage
 {
     public class Location
     {
-        public string code { get; set; } = string.Empty;
+        [JsonProperty("code")]
+        public string Code { get; set; } = string.Empty;
 
-        public string type { get; set; } = string.Empty;
+        [JsonProperty("type")]
+        public string Type { get; set; } = string.Empty;
 
-        public ListeCoordonnees listeCoordonnees { get; set; } = new ListeCoordonnees();
+        [JsonProperty("listeCoordonnees")]
+        public CoordinateList CoordinateList { get; set; } = new CoordinateList();
 
-        public Commune commune { get; set; } = new Commune();
+        [JsonProperty("commune")]
+        public Commune Commune { get; set; } = new Commune();
 
-        public Department departement { get; set; } = new Department();
+        [JsonProperty("departement")]
+        public Department Department { get; set; } = new Department();
 
-        public Region region { get; set; } = new Region();
+        [JsonProperty("region")]
+        public Region Region { get; set; } = new Region();
 
-        public Country pays { get; set; } = new Country();
+        [JsonProperty("pays")]
+        public Country Country { get; set; } = new Country();
 
-        public StopZoneInformation infosZoneArret { get; set; } = new StopZoneInformation();
+        [JsonProperty("infosZoneArret")]
+        public StopZoneInformation StopZoneInformation { get; set; } = new StopZoneInformation();
 
         [JsonProperty("libelle")]
         public string Label { get; set; } = string.Empty;

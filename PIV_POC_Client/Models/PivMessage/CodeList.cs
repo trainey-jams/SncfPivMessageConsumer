@@ -2,10 +2,10 @@
 
 namespace PIV_POC_Client.Models.PivMessage
 {
-    public class ListeCodes
+    public class CodeList
     {
         [JsonProperty("valeur")]
-        public List<Valeur> ListOfValues { get; set; } = new List<Valeur>();
+        public List<ValueItem> Values { get; set; } = new List<ValueItem>();
 
         [JsonProperty("typeDefaut")]
         public string DefaultType { get; set; } = string.Empty;

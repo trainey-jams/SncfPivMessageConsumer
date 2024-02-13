@@ -4,7 +4,8 @@ namespace PIV_POC_Client.Models.PivMessage
 {
     public class Terminus
     {
-        public ListeCoordonnees listeCoordonnees { get; set; } = new ListeCoordonnees();
+        [JsonProperty("listeCoordonnees")]
+        public CoordinateList CoordinateList { get; set; } = new CoordinateList();
 
         [JsonProperty("commune")]
         public Commune Commune { get; set; } = new Commune();
@@ -17,6 +18,9 @@ namespace PIV_POC_Client.Models.PivMessage
 
         [JsonProperty("pays")]
         public Country Country { get; set; } = new Country();
+
+        [JsonProperty("listeMessagesConjoncturels")]
+        public SituationalMessages SituationalMessages { get; set; } = new SituationalMessages();
 
         [JsonProperty("infosZoneArret")]
         public StopZoneInformation StopZoneInformation { get; set; } = new StopZoneInformation();

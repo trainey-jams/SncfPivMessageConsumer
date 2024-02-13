@@ -4,9 +4,11 @@ namespace PIV_POC_Client.Models.PivMessage
 {
     public class StopZoneInformation
     {
-        public ListeCodes listeCodes { get; set; } = new ListeCodes();
+        [JsonProperty("listeCodes")]
+        public CodeList CodeList { get; set; } = new CodeList();
 
-        public bool indicateurSNCF { get; set; }
+        [JsonProperty("indicateurSNCF")]
+        public bool SncfIndicator { get; set; }
 
         [JsonProperty("indicateurMultimodal")]
         public bool MultiModalIndictor { get; set; }

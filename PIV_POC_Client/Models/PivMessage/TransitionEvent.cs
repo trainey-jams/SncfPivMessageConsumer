@@ -28,7 +28,8 @@ namespace PIV_POC_Client.Models.PivMessage
         [JsonProperty("typeAffichage")]
         public string DisplayType { get; set; } = string.Empty;
 
-        public bool indicateurAdaptation { get; set; }
+        [JsonProperty("indicateurAdaptation")]
+        public bool AdaptationIndicator { get; set; }
 
         [JsonProperty("planTransportSource")]
         public string TransportPlanSource { get; set; } = string.Empty;
