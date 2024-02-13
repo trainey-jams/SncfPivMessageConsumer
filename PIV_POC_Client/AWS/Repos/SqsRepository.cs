@@ -1,47 +1,51 @@
-﻿using Amazon.SQS.Model;
+﻿using Amazon.SQS;
+using Amazon.SQS.Model;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PIV_POC_Client.Interfaces;
-using System.Linq.Expressions;
+using PIV_POC_Client.Models.Config;
+using System.Net;
 
 namespace PIV_POC_Client.AWS.Repos
 {
     public class SqsRepository : ISqsRepository
     {
-        private readonly ISqsClientFactory _sqsClientFactory;
+        private readonly ILogger<SqsRepository> Logger;
+        private readonly SqsConfig SqsConfig;
+        private readonly IAmazonSQS SqsClient;
 
-        public SqsRepository(ISqsClientFactory sqsClientFactory)
+        public SqsRepository(ILogger<SqsRepository> logger, IOptions<SqsConfig> sqsConfig, IAmazonSQS sqsClient)
         {
-            _sqsClientFactory = sqsClientFactory ?? throw new ArgumentNullException(nameof(sqsClientFactory));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            SqsConfig = sqsConfig.Value ?? throw new ArgumentNullException(nameof(sqsConfig));
+            SqsClient = sqsClient ?? throw new ArgumentNullException(nameof(sqsClient));
         }
 
-        public async Task PublishMessage(string message)
+        public async Task<bool> PublishMessage(string message)
         {
-            message = message.Replace('\x0', ' ');
-
-            var request = new SendMessageRequest
+            try
             {
-                MessageBody = message,
-                QueueUrl = _sqsClientFactory.GetSqsQueue(),
-            };
+                var request = new SendMessageRequest
+                {
+                    MessageBody = message,
+                    QueueUrl = SqsConfig.GetSqsQueue(),
+                };
 
-            var client = _sqsClientFactory.GetSqsClient();
+                var response = await SqsClient.SendMessageAsync(request);
 
-            await client.SendMessageAsync(request);
-        }
+                if (response.HttpStatusCode == HttpStatusCode.OK)
+                {
+                    return true;
+                }
 
-        public async Task PublishMessageBatch(List<SendMessageBatchRequestEntry> messages)
-        {
-            //  message = message.Replace('\x0', ' ');
-
-            var request = new SendMessageBatchRequest
+                return false;
+            }
+            catch (Exception ex)
             {
-                Entries = messages,
-                QueueUrl = _sqsClientFactory.GetSqsQueue()
-            };
+                Logger.LogError(ex.Message);
 
-
-            var client = _sqsClientFactory.GetSqsClient();
-
-            var response = await client.SendMessageBatchAsync(request);
+                return false;
+            }
         }
     }
 }

@@ -1,16 +1,18 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Amazon;
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
+using Amazon.SQS;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PIV_POC_Client.AWS.ClientFactories.S3;
-using PIV_POC_Client.AWS.ClientFactories.SQS;
+using Microsoft.Extensions.Logging;
+using PIV_POC_Client._OpenWire;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
+using PIV_POC_Client.Mappers;
 using PIV_POC_Client.Models.Config;
-using PIV_POC_Client.Models.Config.AWS;
-using PIV_POC_Client.Models.Config.DAL;
-using PIV_POC_Client.Processor;
+using PIV_POC_Client.Models.Config.Openwire;
 using PIV_POC_Client.Services;
-using PIV_POC_Client.STOMP.Wrappers;
-using PIV_POC_Client.WebSocketClient;
 
 namespace PIV_POC_Client.App
 {
@@ -25,9 +27,9 @@ namespace PIV_POC_Client.App
 
                 var serviceProvider = services.BuildServiceProvider();
 
-                var service = serviceProvider.GetService<PIVNotificationClient>();
+                var service = serviceProvider.GetService<MessageClient>();
 
-                await service.GetMessages();
+                await service.EstablishPivBrokerConnection();
             }
 
             catch (Exception ex)
@@ -43,29 +45,32 @@ namespace PIV_POC_Client.App
 
             Configuration = builder.Build();
 
-            services.Configure<NotificationClientConfiguration>(Configuration.GetSection("NotificationClientConfiguration"));
-            services.Configure<SqlConnectionConfiguration>(Configuration.GetSection("SqlConnectionConfiguration"));
-            services.Configure<MessageRepositoryConfiguration>(Configuration.GetSection("MessageRepositoryConfiguration"));
-            services.Configure<MessageProcessorConfiguration>(Configuration.GetSection("MessageProcessorConfiguration"));
-            
-            services.Configure<AWSCredentialConfig>(Configuration.GetSection("AWSCredentialConfig"));
-            services.Configure<S3Config>(Configuration.GetSection("AWSCredentialConfig"));
-            services.Configure<AWSCredentialConfig>(Configuration.GetSection("AWSCredentialConfig"));
+            services.AddTrainlineLogging(Configuration).BuildServiceProvider();
+            services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
-            services.AddTransient<IWebSocketClientFactory, WebSocketClientFactory>();
-            services.AddTransient<IMessageProcessor, MessageProcessor>();
-            services.AddTransient<IStompClientFrameWrapper, StompClientFrameWrapper>();
-            services.AddTransient<IStompServerFrameWrapper, StompServerFrameWrapper>();
+            services.Configure<SqsConfig>(Configuration.GetSection("SqsConfig"));
+            services.Configure<BrokerConfig>(Configuration.GetSection("BrokerConfig"));
+            services.Configure<MessageServiceConfig>(Configuration.GetSection("MessageServiceConfig"));
 
-            services.AddTransient<ISqsClientFactory, SqsClientFactory>();
-            services.AddTransient<IS3ClientFactory, S3ClientFactory>();
+            services.AddTransient<IActiveMQMapper, ActiveMQMapper>();
 
+            services.AddTransient<IOpenWireConnectionFactory, OpenWireConnectionFactory>();
+            services.AddTransient<IOpenWireSessionFactory, OpenWireSessionFactory>();
+
+            services.AddTransient(sp => new AWSOptions
+            {
+                Credentials = new CredentialProfileStoreChain().TryGetAWSCredentials("default", out var defaultCredentials)
+                ? defaultCredentials
+                : new InstanceProfileAWSCredentials(),
+                Region = RegionEndpoint.EUWest1
+            });
+
+            services.AddAWSService<IAmazonSQS>();
             services.AddTransient<ISqsRepository, SqsRepository>();
-            services.AddTransient<IS3Repository, S3Repository>();
 
             services.AddTransient<IMessageService, MessageService>();
             services.AddSingleton(Configuration);
-            services.AddSingleton<PIVNotificationClient>();
+            services.AddSingleton<MessageClient>();
         }
     }
 }

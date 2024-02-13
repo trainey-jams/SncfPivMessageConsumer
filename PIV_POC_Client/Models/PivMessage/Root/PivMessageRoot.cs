@@ -4,32 +4,22 @@ namespace PIV_POC_Client.Models.PivMessage.Root
 {
     public class PivMessageRoot
     {
-        [JsonProperty("MESSAGEHEADERS")]
-        public MessageHeaders MessageHeaders { get; set; } = new MessageHeaders();
+        public string Expiration { get; set; } = string.Empty;
 
-        [JsonProperty("MESSAGEBODY")]
-        public MessageBody MessageBody { get; set; } = new MessageBody();
-    }
+        public DateTime BrokerInTime { get; set; }
 
-    public class MessageHeaders
-    {
-        [JsonProperty("content-length")]
-        public int ContentLength { get; set; }
+        public DateTime BrokerOutTime { get; set; }
 
-        [JsonProperty("expires")]
-        public string Expires { get; set; } = string.Empty;
+        public DateTime ProcTime { get; set; }  
 
-        [JsonProperty("destination")]
         public string Destination { get; set; } = string.Empty;
 
-        [JsonProperty("message-id")]
-        public string MessageId { get; set; } = string.Empty;
+        public string PartitionKey { get; set; } = string.Empty;
 
-        [JsonProperty("priority")]
-        public string Priority { get; set; } = string.Empty;
+        public byte Priority { get; set; }
 
-        [JsonProperty("subscription")]
-        public string SubscriptionId { get; set; } = string.Empty;
+        [JsonProperty("content")]
+        public MessageBody MessageBody { get; set; } = new MessageBody();
     }
 
     public class MessageBody

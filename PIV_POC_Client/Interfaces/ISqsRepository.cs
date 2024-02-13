@@ -4,8 +4,6 @@ namespace PIV_POC_Client.Interfaces
 {
     public interface ISqsRepository
     {
-        Task PublishMessage(string message);
-
-        Task PublishMessageBatch(List<SendMessageBatchRequestEntry> messages);
+        Task <bool>PublishMessage(string message);
     }
 }
