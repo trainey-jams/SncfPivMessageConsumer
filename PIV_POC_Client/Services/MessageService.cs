@@ -1,4 +1,5 @@
 ﻿using Apache.NMS;
+using Apache.NMS.ActiveMQ;
 using Apache.NMS.ActiveMQ.Commands;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,10 +18,6 @@ namespace PIV_POC_Client.Services
         private readonly IActiveMQMapper Mapper;
         private readonly ISqsRepository SqsRepository;
 
-        private static int processedMessages = 0;
-        private static int totalMessages = 0;
-        private static int FailedMessages = 0;
-
         public MessageService(ILogger<MessageService> logger, IOptions<MessageServiceConfig> serviceConfig, IActiveMQMapper mapper, ISqsRepository sqsRepository)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -29,20 +26,8 @@ namespace PIV_POC_Client.Services
             SqsRepository = sqsRepository ?? throw new ArgumentNullException(nameof(sqsRepository));
         }
 
-        private void OnTimedEvent(object source, ElapsedEventArgs e)
-        {
-            Logger.LogInformation($"{processedMessages} messages processed in last 30 seconds.");
-            processedMessages = 0;
-        }
-
         public async Task ProcessPIVMessages(IMessageConsumer consumer, CancellationToken cancellationToken)
         {
-            double interval = 30000.0;
-            var timer = new System.Timers.Timer(interval);
-            timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            timer.AutoReset = true;
-            timer.Enabled = true;
-
             List<ActiveMQMessage> messages = new List<ActiveMQMessage>();
 
             var task = Task.Run(async () =>
@@ -70,15 +55,11 @@ namespace PIV_POC_Client.Services
                             }
                             else
                             {
-                                FailedMessages++;
-                                Logger.LogInformation($"There are {FailedMessages} failed messages.");
+                                Logger.LogWarning($"Failed to process message with id: {rawMessage.MessageId}");
                             }
                         });
 
-                        // Logger.LogInformation($"Processed message batch. There are now {consumer.UnconsumedMessageCount} unconsumed messages.");
-
-                        processedMessages += 50;
-                        totalMessages += 50;
+                        Logger.LogInformation($"Processed message batch of {ServiceConfig.BatchSize} messages. There are now {((MessageConsumer)consumer).UnconsumedMessageCount} unconsumed messages.");
 
                         messages.Clear();
                     }

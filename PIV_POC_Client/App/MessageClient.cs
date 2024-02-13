@@ -1,6 +1,4 @@
-﻿using Apache.NMS;
-using Apache.NMS.ActiveMQ;
-using Apache.NMS.ActiveMQ.Commands;
+﻿using Apache.NMS.ActiveMQ;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PIV_POC_Client._OpenWire;
@@ -38,7 +36,7 @@ namespace PIV_POC_Client.App
             var cancellationToken = new CancellationTokenSource();
             var token = cancellationToken.Token;
 
-            Logger.LogInformation("Connected, session started.");
+            Logger.LogInformation("Connected to SNCF PIV message broker, session started.");
 
             await MessageService.ProcessPIVMessages(consumer, token);
 
@@ -47,10 +45,7 @@ namespace PIV_POC_Client.App
 
             if (token.IsCancellationRequested)
             {
-                Console.WriteLine("\n");
-                Console.WriteLine("*********************************************************");
-                Console.WriteLine("Task cancelled by user, disconnecting from message stream.");
-                Console.WriteLine("*********************************************************");
+                Logger.LogInformation("Cancellation has been requested, disconnecting from broker and shutting down.");
 
                 await Task.Delay(5000);
             }
