@@ -10,11 +10,9 @@ namespace PIV_POC_Client.Models.PivMessage.Root
 
         public DateTime BrokerOutTime { get; set; }
 
-        public DateTime ProcTime { get; set; }  
-
         public string Destination { get; set; } = string.Empty;
 
-        public string PartitionKey { get; set; } = string.Empty;
+        public string MessageId { get; set; } = string.Empty;
 
         public byte Priority { get; set; }
 

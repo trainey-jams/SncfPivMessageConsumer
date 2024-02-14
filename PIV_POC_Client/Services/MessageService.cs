@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PIV_POC_Client.Interfaces;
+using PIV_POC_Client.Publishers;
 using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.PivMessage.Root;
 using PIV_POC_Client.Utility;
@@ -17,14 +18,14 @@ namespace PIV_POC_Client.Services
         private readonly ILogger<MessageService> Logger;
         private readonly MessageServiceConfig ServiceConfig;
         private readonly IActiveMQMapper Mapper;
-        private readonly ISqsRepository SqsRepository;
+        private readonly IMessagePublisher MessagePublisher;
 
-        public MessageService(ILogger<MessageService> logger, IOptions<MessageServiceConfig> serviceConfig, IActiveMQMapper mapper, ISqsRepository sqsRepository)
+        public MessageService(ILogger<MessageService> logger, IOptions<MessageServiceConfig> serviceConfig, IActiveMQMapper mapper, IMessagePublisher messagePublisher)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             ServiceConfig = serviceConfig.Value ?? throw new ArgumentNullException(nameof(serviceConfig));
             Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            SqsRepository = sqsRepository ?? throw new ArgumentNullException(nameof(sqsRepository));
+            MessagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
         }
 
         public async Task ProcessPIVMessages(IMessageConsumer consumer, CancellationToken cancellationToken)
@@ -48,17 +49,18 @@ namespace PIV_POC_Client.Services
                         {
                             PivMessageRoot mappedMessage = Mapper.Map(rawMessage);
 
-                            //string mappedMessageStr = JsonConvert.SerializeObject(mappedMessage);
+                            string messageStr = TranslationSerializer.Serialize(mappedMessage, true);
 
-                            string mappedMessageStr = TranslationSerializer.Serialize(mappedMessage, true);
+                            //not sure what we agreed for message keys.
+                            string messageKey = $"{mappedMessage.MessageId}{mappedMessage.BrokerOutTime}";
 
-                            if (await SqsRepository.PublishMessage(mappedMessageStr))
+                            if (await MessagePublisher.PublishMessage(messageKey, messageStr))
                             {
                                 await rawMessage.AcknowledgeAsync();
                             }
                             else
                             {
-                                Logger.LogWarning($"Failed to process message with id: {rawMessage.MessageId}");
+                                Logger.LogWarning($"Failed to process message with key: {messageKey}");
                             }
                         });
 

@@ -2,6 +2,7 @@
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
+using Amazon.S3;
 using Amazon.SQS;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ using PIV_POC_Client._OpenWire;
 using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Mappers;
+using PIV_POC_Client.Publishers;
 using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.Config.Openwire;
 using PIV_POC_Client.Services;
@@ -49,6 +51,7 @@ namespace PIV_POC_Client.App
             services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
             services.Configure<SqsConfig>(Configuration.GetSection("SqsConfig"));
+            services.Configure<S3Config>(Configuration.GetSection("S3Config"));
             services.Configure<BrokerConfig>(Configuration.GetSection("BrokerConfig"));
             services.Configure<SessionConfig>(Configuration.GetSection("SessionConfig"));
             services.Configure<MessageServiceConfig>(Configuration.GetSection("MessageServiceConfig"));
@@ -68,6 +71,11 @@ namespace PIV_POC_Client.App
 
             services.AddAWSService<IAmazonSQS>();
             services.AddTransient<ISqsRepository, SqsRepository>();
+            
+            services.AddAWSService<IAmazonS3>();
+            services.AddTransient<IS3Repository, S3Repository>();
+
+            services.AddTransient<IMessagePublisher, MessagePublisher>();
 
             services.AddTransient<IMessageService, MessageService>();
             services.AddSingleton(Configuration);

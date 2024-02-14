@@ -10,6 +10,9 @@ namespace PIV_POC_Client.Models.Enums
         [JsonProperty("coach")]
         Coach,
 
+        [JsonProperty("bus")]
+        Bus,
+
         [JsonProperty("tram")]
         Tram,
     }

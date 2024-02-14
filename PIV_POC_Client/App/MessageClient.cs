@@ -41,6 +41,7 @@ namespace PIV_POC_Client.App
             await MessageService.ProcessPIVMessages(consumer, token);
 
             Console.ReadKey();
+            
             cancellationToken.Cancel();
 
             if (token.IsCancellationRequested)

@@ -21,13 +21,13 @@ namespace PIV_POC_Client.AWS.Repos
             SqsClient = sqsClient ?? throw new ArgumentNullException(nameof(sqsClient));
         }
 
-        public async Task<bool> PublishMessage(string message)
+        public async Task<bool> PublishMessage(string messageKey)
         {
             try
             {
                 var request = new SendMessageRequest
                 {
-                    MessageBody = message,
+                    MessageBody = messageKey,
                     QueueUrl = SqsConfig.GetSqsQueue(),
                 };
 
