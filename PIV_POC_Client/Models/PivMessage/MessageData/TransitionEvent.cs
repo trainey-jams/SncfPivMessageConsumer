@@ -17,19 +17,19 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         public string MarketNumber { get; set; } = string.Empty;
 
         [JsonProperty("dateHeure")]
-        public DateTime PlannedDateTime { get; set; }
+        public DateTime? PlannedDateTime { get; set; }
 
         [JsonProperty("dateHeureReelle")]
-        public DateTime ActualDateTime { get; set; }
+        public DateTime? ActualDateTime { get; set; }
 
         [JsonProperty("dateHeureInterne")]
-        public DateTime InternalDateTime { get; set; }
+        public DateTime? InternalDateTime { get; set; }
 
         [JsonProperty("typeAffichage")]
         public string DisplayType { get; set; } = string.Empty;
 
         [JsonProperty("indicateurAdaptation")]
-        public bool AdaptationIndicator { get; set; }
+        public bool? AdaptationIndicator { get; set; }
 
         [JsonProperty("planTransportSource")]
         public string TransportPlanSource { get; set; } = string.Empty;

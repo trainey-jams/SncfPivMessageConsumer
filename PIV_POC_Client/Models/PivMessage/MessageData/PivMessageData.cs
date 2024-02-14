@@ -71,10 +71,10 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         public TransportPlanSource TransportPlanSource { get; set; }
 
         [JsonProperty("indicateurAdaptation")] // indicates whether traffic was impacted by PTP or not.
-        public bool AdaptationIndicator { get; set; }
+        public bool? AdaptationIndicator { get; set; }
 
         [JsonProperty("indicateurCourseDeReference")]
-        public bool CourseOfReferenceIndicator { get; set; }
+        public bool? CourseOfReferenceIndicator { get; set; }
 
         public string codeTransporteurResponsable { get; set; } = string.Empty;
 

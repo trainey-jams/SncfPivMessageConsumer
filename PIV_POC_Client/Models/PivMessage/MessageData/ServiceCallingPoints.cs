@@ -8,6 +8,6 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         public List<CallingPoint> CallingPoints { get; set; } = new List<CallingPoint>();
 
         [JsonProperty("nombreEscales")]
-        public int NumberOfCallingPoints { get; set; }
+        public int? NumberOfCallingPoints { get; set; }
     }
 }

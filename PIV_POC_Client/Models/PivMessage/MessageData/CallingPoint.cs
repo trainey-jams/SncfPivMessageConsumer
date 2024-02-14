@@ -16,9 +16,9 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         [JsonProperty("voie")]
         public Track Track { get; set; } = new Track();
 
-        public int rang { get; set; }
+        public int? rang { get; set; }
 
-        public int rangInterne { get; set; }
+        public int? rangInterne { get; set; }
 
         [JsonProperty("quai")]
         public Platform Platform { get; set; } = new Platform();

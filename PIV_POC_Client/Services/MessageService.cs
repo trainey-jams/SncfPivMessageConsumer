@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.PivMessage.Root;
+using PIV_POC_Client.Utility;
 using System.Timers;
 
 namespace PIV_POC_Client.Services
@@ -47,7 +48,9 @@ namespace PIV_POC_Client.Services
                         {
                             PivMessageRoot mappedMessage = Mapper.Map(rawMessage);
 
-                            string mappedMessageStr = JsonConvert.SerializeObject(mappedMessage);
+                            //string mappedMessageStr = JsonConvert.SerializeObject(mappedMessage);
+
+                            string mappedMessageStr = TranslationSerializer.Serialize(mappedMessage, true);
 
                             if (await SqsRepository.PublishMessage(mappedMessageStr))
                             {

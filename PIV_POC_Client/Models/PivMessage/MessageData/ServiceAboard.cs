@@ -17,6 +17,6 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         public string Name { get; set; } = string.Empty;
 
         [JsonProperty("applicable")]
-        public bool Applicable { get; set; }
+        public bool? Applicable { get; set; }
     }
 }

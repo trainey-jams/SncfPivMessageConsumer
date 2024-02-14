@@ -8,6 +8,6 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         public List<ServiceElement> Elements { get; set; } = new List<ServiceElement>();
 
         [JsonProperty("nombreElements")]
-        public int NumberOfElements { get; set; }
+        public int? NumberOfElements { get; set; }
     }
 }
