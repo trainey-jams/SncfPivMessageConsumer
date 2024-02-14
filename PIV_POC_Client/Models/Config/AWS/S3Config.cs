@@ -5,5 +5,7 @@
         public string Region { get; set; } = string.Empty;
 
         public string S3BucketName { get; set; } = string.Empty;
+
+        public string ContentType {  get; set; } = string.Empty;
     }
 }
