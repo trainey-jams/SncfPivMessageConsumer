@@ -22,6 +22,8 @@ namespace PIV_POC_Client.Publishers
                 return await SqsRepository.PublishMessage(messageKey);
             }
 
+            //maybe try and delete from s3 if sqs fails?
+
             return false;
         }
     }

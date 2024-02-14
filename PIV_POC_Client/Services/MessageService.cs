@@ -64,7 +64,7 @@ namespace PIV_POC_Client.Services
                             }
                         });
 
-                        Logger.LogInformation($"Processed message batch of {ServiceConfig.BatchSize} messages. There are now {((MessageConsumer)consumer).UnconsumedMessageCount} unconsumed messages.");
+                        Logger.LogInformation($"There are now {((MessageConsumer)consumer).UnconsumedMessageCount} unconsumed messages.");
 
                         messages.Clear();
                     }

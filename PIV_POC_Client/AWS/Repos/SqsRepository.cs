@@ -38,6 +38,8 @@ namespace PIV_POC_Client.AWS.Repos
                     return true;
                 }
 
+                Logger.LogWarning($"Could not upload message {messageKey} to Sqs queue: {SqsConfig.GetSqsQueue()}.");
+
                 return false;
             }
             catch (Exception ex)
