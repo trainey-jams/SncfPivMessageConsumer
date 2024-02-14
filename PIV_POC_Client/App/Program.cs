@@ -50,6 +50,7 @@ namespace PIV_POC_Client.App
 
             services.Configure<SqsConfig>(Configuration.GetSection("SqsConfig"));
             services.Configure<BrokerConfig>(Configuration.GetSection("BrokerConfig"));
+            services.Configure<SessionConfig>(Configuration.GetSection("SessionConfig"));
             services.Configure<MessageServiceConfig>(Configuration.GetSection("MessageServiceConfig"));
 
             services.AddTransient<IActiveMQMapper, ActiveMQMapper>();
