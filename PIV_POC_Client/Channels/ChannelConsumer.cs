@@ -43,6 +43,8 @@ namespace PIV_POC_Client.Channels
                         if (await MessagePublisher.PublishMessage(messageKey, messageStr))
                         {
                             await rawMessage.AcknowledgeAsync();
+
+                         //   Logger.LogInformation($"Processed message with key {messageKey}");
                         }
                         else
                         {

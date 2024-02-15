@@ -27,9 +27,9 @@ namespace PIV_POC_Client.App
 
                 var serviceProvider = services.BuildServiceProvider();
 
-                var service = serviceProvider.GetService<MessageClient>();
+                var client = serviceProvider.GetService<MessageClient>();
 
-                await service.EstablishPivBrokerConnection();
+                await client.Run();
             }
 
             catch (Exception ex)
