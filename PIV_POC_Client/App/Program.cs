@@ -1,8 +1,10 @@
-﻿using Apache.NMS.ActiveMQ.Commands;
+﻿using Apache.NMS;
+using Apache.NMS.ActiveMQ.Commands;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PIV_POC_Client._OpenWire;
+using PIV_POC_Client.Channels;
 using PIV_POC_Client.DI;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Mappers;
@@ -59,6 +61,9 @@ namespace PIV_POC_Client.App
             services.AddTransient<IOpenWireSessionFactory, OpenWireSessionFactory>();
 
             services.AddAws();
+
+            services.AddTransient<IChannelConsumer, ChannelConsumer>();
+            services.AddTransient<IChannelProducer, ChannelProducer>();
 
             services.AddTransient<IMessagePublisher, MessagePublisher>();
             services.AddSingleton<IMessageService, MessageService>();

@@ -3,16 +3,12 @@ using Apache.NMS.ActiveMQ.Commands;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PIV_POC_Client._OpenWire;
+using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Models.Config.Openwire;
 using System.Threading.Channels;
 
 namespace PIV_POC_Client.Channels
 {
-    public interface IChannelProducer
-    {
-        Task WriteToChannel(ChannelWriter<ActiveMQMessage> channelWriter, CancellationToken token);
-    }
-
     public class ChannelProducer : IChannelProducer
     {
         private readonly ILogger<ChannelProducer> Logger;
@@ -31,21 +27,32 @@ namespace PIV_POC_Client.Channels
 
         public async Task WriteToChannel(ChannelWriter<ActiveMQMessage> channelWriter, CancellationToken token)
         {
-            using var session = await SessionFactory.GetSession(SessionConfig.AcknowledgementMode);
-
-            Logger.LogInformation("Connected to SNCF PIV message broker, session started.");
-
-            using var dest = await session.GetTopicAsync(SessionConfig.TopicName);
-            using MessageConsumer consumer = (MessageConsumer)await session.CreateConsumerAsync(dest);
-
-            while (!token.IsCancellationRequested)
+            try
             {
-                var rawMessage = await consumer.ReceiveAsync() as ActiveMQMessage;
+                using var session = await SessionFactory.GetSession(SessionConfig.AcknowledgementMode);
 
-                channelWriter.TryWrite(rawMessage);
+                Logger.LogInformation("Connected to SNCF PIV message broker, session started.");
+
+                using var dest = await session.GetTopicAsync(SessionConfig.TopicName);
+                using MessageConsumer consumer = (MessageConsumer)await session.CreateConsumerAsync(dest);
+
+                while (!token.IsCancellationRequested)
+                {
+                    while (await channelWriter.WaitToWriteAsync())
+                    {
+                        var rawMessage = await consumer.ReceiveAsync() as ActiveMQMessage;
+
+                        await channelWriter.WriteAsync(rawMessage);
+                    }
+                }
+
+                channelWriter.Complete();
             }
 
-            channelWriter.Complete();
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
+            }   
         }
     }
 }
