@@ -28,17 +28,10 @@ namespace PIV_POC_Client.App
 
         public async Task EstablishPivBrokerConnection()
         {
-            using var session = await SessionFactory.GetSession(SessionConfig.AcknowledgementMode);
-
-            using var dest = await session.GetTopicAsync(SessionConfig.TopicName);
-            using MessageConsumer consumer = (MessageConsumer)await session.CreateConsumerAsync(dest);
-
             var cancellationToken = new CancellationTokenSource();
             var token = cancellationToken.Token;
 
-            Logger.LogInformation("Connected to SNCF PIV message broker, session started.");
-
-            await MessageService.ProcessPIVMessages(consumer, token);
+            await MessageService.ProcessPIVMessages(token);
 
             Console.ReadKey();
             

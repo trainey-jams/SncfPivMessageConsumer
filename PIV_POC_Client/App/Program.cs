@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Apache.NMS.ActiveMQ.Commands;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PIV_POC_Client._OpenWire;
@@ -9,6 +10,7 @@ using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.Config.Openwire;
 using PIV_POC_Client.Publishers;
 using PIV_POC_Client.Services;
+using System.Threading.Channels;
 
 namespace PIV_POC_Client.App
 {
@@ -50,6 +52,8 @@ namespace PIV_POC_Client.App
             services.Configure<SessionConfig>(Configuration.GetSection("SessionConfig"));
             services.Configure<MessageServiceConfig>(Configuration.GetSection("MessageServiceConfig"));
 
+            services.AddSingleton<Channel<ActiveMQMessage>>(Channel.CreateBounded<ActiveMQMessage>(500));
+
             services.AddTransient<IActiveMQMapper, ActiveMQMapper>();
             services.AddTransient<IOpenWireConnectionFactory, OpenWireConnectionFactory>();
             services.AddTransient<IOpenWireSessionFactory, OpenWireSessionFactory>();
@@ -57,7 +61,7 @@ namespace PIV_POC_Client.App
             services.AddAws();
 
             services.AddTransient<IMessagePublisher, MessagePublisher>();
-            services.AddTransient<IMessageService, MessageService>();
+            services.AddSingleton<IMessageService, MessageService>();
             
             services.AddSingleton(Configuration);
             services.AddSingleton<MessageClient>();

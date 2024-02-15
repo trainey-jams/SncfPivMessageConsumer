@@ -1,15 +1,10 @@
-﻿using Apache.NMS;
-using Apache.NMS.ActiveMQ;
-using Apache.NMS.ActiveMQ.Commands;
+﻿using Apache.NMS.ActiveMQ.Commands;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using PIV_POC_Client.Channels;
 using PIV_POC_Client.Interfaces;
-using PIV_POC_Client.Publishers;
 using PIV_POC_Client.Models.Config;
-using PIV_POC_Client.Models.PivMessage.Root;
-using PIV_POC_Client.Utility;
-using System.Timers;
+using System.Threading.Channels;
 
 namespace PIV_POC_Client.Services
 {
@@ -17,56 +12,39 @@ namespace PIV_POC_Client.Services
     {
         private readonly ILogger<MessageService> Logger;
         private readonly MessageServiceConfig ServiceConfig;
-        private readonly IActiveMQMapper Mapper;
-        private readonly IMessagePublisher MessagePublisher;
+        private readonly IChannelProducer ChannelProducer;
+        private readonly IChannelConsumer ChannelConsumer;
+        private readonly Channel<ActiveMQMessage> Channel;
 
-        public MessageService(ILogger<MessageService> logger, IOptions<MessageServiceConfig> serviceConfig, IActiveMQMapper mapper, IMessagePublisher messagePublisher)
+        public MessageService(
+            ILogger<MessageService> logger,
+            IOptions<MessageServiceConfig> serviceConfig,
+            IChannelProducer channelProducer,
+            IChannelConsumer channelConsumer,
+            Channel<ActiveMQMessage> channel
+            )
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             ServiceConfig = serviceConfig.Value ?? throw new ArgumentNullException(nameof(serviceConfig));
-            Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            MessagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
+            ChannelProducer = channelProducer ?? throw new ArgumentNullException(nameof(channelProducer));
+            ChannelConsumer = channelConsumer ?? throw new ArgumentNullException(nameof(channelConsumer));
+            Channel = channel ?? throw new ArgumentNullException(nameof(channel));
         }
 
-        public async Task ProcessPIVMessages(IMessageConsumer consumer, CancellationToken cancellationToken)
+        public async Task ProcessPIVMessages(CancellationToken cancellationToken)
         {
-            List<ActiveMQMessage> messages = new List<ActiveMQMessage>();
-
             var task = Task.Run(async () =>
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     try
                     {
-                        for (int i = 0; i < ServiceConfig.BatchSize; i++)
+                        await ChannelProducer.WriteToChannel(Channel.Writer, cancellationToken);
+
+                        await Parallel.ForEachAsync(Channel.Reader.ReadAllAsync(), async (item, cancellationToken) =>
                         {
-                            var rawMessage = await consumer.ReceiveAsync() as ActiveMQMessage;
-
-                            messages.Add(rawMessage);
-                        }
-
-                        Parallel.ForEach(messages, async rawMessage =>
-                        {
-                            PivMessageRoot mappedMessage = Mapper.Map(rawMessage);
-
-                            string messageStr = TranslationSerializer.Serialize(mappedMessage, true);
-
-                            //not sure what we agreed for message keys.
-                            string messageKey = $"{mappedMessage.MessageId}{mappedMessage.BrokerOutTime}";
-
-                            if (await MessagePublisher.PublishMessage(messageKey, messageStr))
-                            {
-                                await rawMessage.AcknowledgeAsync();
-                            }
-                            else
-                            {
-                                Logger.LogWarning($"Failed to process message with key: {messageKey}");
-                            }
+                            await ChannelConsumer.ConsumeMessages(Channel.Reader, cancellationToken);
                         });
-
-                        Logger.LogInformation($"There are now {((MessageConsumer)consumer).UnconsumedMessageCount} unconsumed messages.");
-
-                        messages.Clear();
                     }
 
                     catch (Exception ex)
