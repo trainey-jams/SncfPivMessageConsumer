@@ -37,7 +37,7 @@ namespace PIV_POC_Client.Services
                         await Task.WhenAll
                         (
                             ChannelProducer.WriteToChannel(Channel.Writer, cancellationToken), 
-                            Parallel.ForEachAsync(Channel.Reader.ReadAllAsync(), async (item, cancellationToken) =>
+                            Parallel.ForAsync(0, 100, async (item, cancellationToken) =>
                             {
                                 await ChannelConsumer.ConsumeMessages(Channel.Reader, cancellationToken);
                             })
