@@ -48,7 +48,6 @@ namespace PIV_POC_Client.Channels
 
                 channelWriter.Complete();
             }
-
             catch (Exception ex)
             {
                 Logger.LogError(ex.ToString());

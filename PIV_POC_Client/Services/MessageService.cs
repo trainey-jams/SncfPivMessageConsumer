@@ -1,6 +1,5 @@
 ﻿using Apache.NMS.ActiveMQ.Commands;
 using Microsoft.Extensions.Logging;
-using PIV_POC_Client.Channels;
 using PIV_POC_Client.Interfaces;
 using System.Threading.Channels;
 
