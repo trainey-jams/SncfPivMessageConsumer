@@ -1,6 +1,5 @@
 ﻿using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
-using Amazon.SQS;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PIV_POC_Client.Interfaces;
@@ -28,7 +27,7 @@ namespace PIV_POC_Client.AWS.Repos
 
         public async Task<bool> PublishMessage(string message)
         {
-            string y = message.Replace("\r\n", "");
+            message = message.Replace(" ", "").Replace("\r\n", "");
 
             try
             {
