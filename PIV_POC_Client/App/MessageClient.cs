@@ -26,7 +26,7 @@ namespace PIV_POC_Client.App
             MessageService = messageService;
         }
 
-        public async Task EstablishPivBrokerConnection()
+        public async Task Run()
         {
             using var session = await SessionFactory.GetSession(SessionConfig.AcknowledgementMode);
 

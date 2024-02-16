@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PIV_POC_Client.Interfaces;
-using PIV_POC_Client.Publishers;
 using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.PivMessage.Root;
 using PIV_POC_Client.Utility;
@@ -18,14 +17,14 @@ namespace PIV_POC_Client.Services
         private readonly ILogger<MessageService> Logger;
         private readonly MessageServiceConfig ServiceConfig;
         private readonly IActiveMQMapper Mapper;
-        private readonly IMessagePublisher MessagePublisher;
+        private readonly ISnsRepository SnsRepository;
 
-        public MessageService(ILogger<MessageService> logger, IOptions<MessageServiceConfig> serviceConfig, IActiveMQMapper mapper, IMessagePublisher messagePublisher)
+        public MessageService(ILogger<MessageService> logger, IOptions<MessageServiceConfig> serviceConfig, IActiveMQMapper mapper, ISnsRepository snsRepository)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             ServiceConfig = serviceConfig.Value ?? throw new ArgumentNullException(nameof(serviceConfig));
             Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            MessagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
+            SnsRepository = snsRepository ?? throw new ArgumentNullException(nameof(snsRepository));
         }
 
         public async Task ProcessPIVMessages(IMessageConsumer consumer, CancellationToken cancellationToken)
@@ -51,16 +50,13 @@ namespace PIV_POC_Client.Services
 
                             string messageStr = TranslationSerializer.Serialize(mappedMessage, true);
 
-                            //not sure what we agreed for message keys.
-                            string messageKey = $"{mappedMessage.MessageId}{mappedMessage.BrokerOutTime}";
-
-                            if (await MessagePublisher.PublishMessage(messageKey, messageStr))
+                            if (await SnsRepository.PublishMessage(messageStr))
                             {
                                 await rawMessage.AcknowledgeAsync();
                             }
                             else
                             {
-                                Logger.LogWarning($"Failed to process message with key: {messageKey}");
+                                Logger.LogWarning($"Failed to process message with key: {mappedMessage.MessageId}");
                             }
                         });
 
