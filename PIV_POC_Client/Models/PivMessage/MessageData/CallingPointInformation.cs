@@ -2,7 +2,7 @@
 
 namespace PIV_POC_Client.Models.PivMessage.MessageData
 {
-    public class StopZoneInformation
+    public class CallingPointInformation
     {
         [JsonProperty("listeCodes")]
         public CodeList CodeList { get; set; } = new CodeList();

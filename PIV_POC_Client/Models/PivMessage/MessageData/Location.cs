@@ -26,7 +26,7 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         public Country Country { get; set; } = new Country();
 
         [JsonProperty("infosZoneArret")]
-        public StopZoneInformation StopZoneInformation { get; set; } = new StopZoneInformation();
+        public CallingPointInformation StopZoneInformation { get; set; } = new CallingPointInformation();
 
         [JsonProperty("libelle")]
         public string Label { get; set; } = string.Empty;

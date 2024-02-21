@@ -23,7 +23,7 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         public SituationalMessages SituationalMessages { get; set; } = new SituationalMessages();
 
         [JsonProperty("infosZoneArret")]
-        public StopZoneInformation StopZoneInformation { get; set; } = new StopZoneInformation();
+        public CallingPointInformation StopZoneInformation { get; set; } = new CallingPointInformation();
 
         [JsonProperty("code")]
         public string Code { get; set; } = string.Empty;
