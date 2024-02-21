@@ -16,9 +16,12 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         [JsonProperty("voie")]
         public Track Track { get; set; } = new Track();
 
-        public int? rang { get; set; }
-
-        public int? rangInterne { get; set; }
+        [JsonProperty("rang")]
+        public int? Rank { get; set; } // If train goes from station A to station C, A -> B -> C Then first station A will have rank 1, the second one B will have rank 2 etc.
+                                       // There might be a more suitable name for it.
+        
+        [JsonProperty("rangInterne")]
+        public int? InternalRank { get; set; }
 
         [JsonProperty("quai")]
         public Platform Platform { get; set; } = new Platform();

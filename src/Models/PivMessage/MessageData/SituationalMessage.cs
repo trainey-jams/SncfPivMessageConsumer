@@ -30,7 +30,7 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         public string ContentFormatSource { get; set; } = string.Empty;
 
         [JsonProperty("dateMAJ")]
-        public string DateMj { get; set; } = string.Empty;
+        public DateTime? UpdateDate { get; set; }
 
         [JsonProperty("dateHeureDebut")]
         public DateTime? StartDate { get; set; }

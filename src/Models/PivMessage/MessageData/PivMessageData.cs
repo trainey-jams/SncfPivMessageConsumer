@@ -61,11 +61,10 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         public string EquipmentType { get; set; } = string.Empty;
 
         [JsonProperty("codeMission")]
-        public string CodeMission { get; set; } = string.Empty;
+        public string MissionCode { get; set; } = string.Empty;
 
         [JsonProperty("natureTrain")]
         public string NatureTrain { get; set; } = string.Empty;
-
 
         [JsonProperty("planTransportSource")]
         public TransportPlanSource TransportPlanSource { get; set; }
@@ -76,8 +75,10 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         [JsonProperty("indicateurCourseDeReference")]
         public bool? CourseOfReferenceIndicator { get; set; }
 
-        public string codeTransporteurResponsable { get; set; } = string.Empty;
+        [JsonProperty("codeTransporteurResponsable")]
+        public string AccountableCarrierCode { get; set; } = string.Empty;
 
+        [JsonProperty("TransportPlanDisruptionId")]
         public string idPlanTransportPerturbe { get; set; } = string.Empty;
     }
 }

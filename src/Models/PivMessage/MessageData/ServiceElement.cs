@@ -8,16 +8,16 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         public List<TrainCarriage> TrainCarriages { get; set; } = new List<TrainCarriage>();
 
         [JsonProperty("typeMateriel")]
-        public string MaterialType { get; set; } = string.Empty;
+        public string TrainType { get; set; } = string.Empty;
 
         [JsonProperty("serieMateriel")]
-        public string MaterialSeries { get; set; } = string.Empty;
+        public string TrainSeries { get; set; } = string.Empty;
 
         [JsonProperty("familleMateriel")]
-        public string MaterialFamily { get; set; } = string.Empty;
+        public string TrainFamily { get; set; } = string.Empty;
 
         [JsonProperty("libelleFamilleMateriel")]
-        public string MaterialFamilyLabel { get; set; } = string.Empty;
+        public string TrainFamilyLabel { get; set; } = string.Empty;
 
         [JsonProperty("codeNature")]
         public string NatureCode { get; set; } = string.Empty;
@@ -32,13 +32,13 @@ namespace PIV_POC_Client.Models.PivMessage.MessageData
         public string ElementRank { get; set; } = string.Empty;
 
         [JsonProperty("nomLivree")]
-        public string nomLivree { get; set; } = string.Empty;
+        public string InsigniaName { get; set; } = string.Empty;
 
         [JsonProperty("imageLivree")]
-        public string imageLivree { get; set; } = string.Empty;
+        public string InsigniaImage { get; set; } = string.Empty;
 
-        [JsonProperty("CommercialName")]
-        public string nomCommercial { get; set; } = string.Empty;
+        [JsonProperty("nomCommercial")]
+        public string CommercialName { get; set; } = string.Empty;
 
         [JsonProperty("nombreVoituresCommerciales")]
         public string NumberOfCommercialCarriages { get; set; } = string.Empty;
