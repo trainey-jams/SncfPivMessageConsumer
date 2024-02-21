@@ -35,7 +35,7 @@ namespace PIV_POC_Client.Channels
 
                         PivMessageRoot mappedMessage = Mapper.MapAndTranslate(rawMessage);
 
-                        string messageStr = Mapper.Ser(mappedMessage, true);
+                        string messageStr = Mapper.Serialize(mappedMessage, true);
 
                         if (await SnsRepository.PublishMessage(messageStr))
                         {
