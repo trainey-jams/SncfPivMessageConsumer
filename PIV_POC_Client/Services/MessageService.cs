@@ -1,9 +1,6 @@
 ﻿using Apache.NMS.ActiveMQ.Commands;
 using Microsoft.Extensions.Logging;
 using PIV_POC_Client.Interfaces;
-using PIV_POC_Client.Models.Config;
-using PIV_POC_Client.Models.PivMessage.Root;
-using PIV_POC_Client.Utility;
 using System.Threading.Channels;
 
 namespace PIV_POC_Client.Services
@@ -11,6 +8,9 @@ namespace PIV_POC_Client.Services
     public class MessageService : IMessageService
     {
         private readonly ILogger<MessageService> Logger;
+        private readonly IChannelProducer ChannelProducer;
+        private readonly IChannelConsumer ChannelConsumer;
+        private readonly Channel<ActiveMQMessage> Channel;
 
         public MessageService(
             ILogger<MessageService> logger,
@@ -25,7 +25,7 @@ namespace PIV_POC_Client.Services
             Channel = channel ?? throw new ArgumentNullException(nameof(channel));
         }
 
-        public async Task ProcessPIVMessages(CancellationToken cancellationToken)
+        public async Task ProcessMessages(CancellationToken cancellationToken)
         {
             var task = Task.Run(async () =>
             {

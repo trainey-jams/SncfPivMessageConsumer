@@ -11,16 +11,16 @@ namespace PIV_POC_Client.Channels
     {
         private readonly ILogger<ChannelConsumer> Logger;
         private readonly IActiveMQMapper Mapper;
-        private readonly IMessagePublisher MessagePublisher;
+        private readonly ISnsRepository SnsRepository;
 
         public ChannelConsumer(
             ILogger<ChannelConsumer> logger,
             IActiveMQMapper mapper,
-            IMessagePublisher messagePublisher)
+            ISnsRepository snsRepository)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            MessagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
+            SnsRepository = snsRepository ?? throw new ArgumentNullException(nameof(snsRepository));
         }
 
         public async Task ConsumeMessages(ChannelReader<ActiveMQMessage> channelReader, CancellationToken token)
@@ -37,18 +37,13 @@ namespace PIV_POC_Client.Channels
 
                         string messageStr = TranslationSerializer.Serialize(mappedMessage, true);
 
-                        //not sure what we agreed for message keys.
-                        string messageKey = $"{mappedMessage.MessageId}{mappedMessage.BrokerOutTime}";
-
-                        if (await MessagePublisher.PublishMessage(messageKey, messageStr))
+                        if (await SnsRepository.PublishMessage(messageStr))
                         {
                             await rawMessage.AcknowledgeAsync();
-
-                         //   Logger.LogInformation($"Processed message with key {messageKey}");
                         }
                         else
                         {
-                            Logger.LogWarning($"Failed to process message with key: {messageKey}");
+                            Logger.LogWarning($"Failed to process message with id {mappedMessage.MessageId}");
                         }
                     }
 

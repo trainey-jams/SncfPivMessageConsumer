@@ -21,7 +21,7 @@ namespace PIV_POC_Client.App
             var cancellationToken = new CancellationTokenSource();
             var token = cancellationToken.Token;
 
-            await MessageService.ProcessPIVMessages(token);
+            await MessageService.ProcessMessages(token);
 
             Console.ReadKey();
             

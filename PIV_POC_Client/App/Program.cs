@@ -50,7 +50,6 @@ namespace PIV_POC_Client.App
             services.Configure<SnsConfig>(Configuration.GetSection("SnsConfig"));
             services.Configure<BrokerConfig>(Configuration.GetSection("BrokerConfig"));
             services.Configure<SessionConfig>(Configuration.GetSection("SessionConfig"));
-            services.Configure<MessageServiceConfig>(Configuration.GetSection("MessageServiceConfig"));
 
             services.AddSingleton<Channel<ActiveMQMessage>>(Channel.CreateBounded<ActiveMQMessage>(500));
 

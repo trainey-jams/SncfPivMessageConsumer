@@ -49,7 +49,7 @@ namespace PIV_POC_Client.AWS.Repos
             }
             catch (AmazonSimpleNotificationServiceException ex)
             {
-                Logger.LogError(ex, $"Failed to write to SNS queue {SnsConfig.SnsTopicName}");
+                Logger.LogError(ex, $"Failed to write to SNS queue {SnsConfig.TopicName}");
                 return false;
             }
 

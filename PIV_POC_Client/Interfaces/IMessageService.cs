@@ -2,6 +2,6 @@
 {
     public interface IMessageService
     {
-        public Task ProcessPIVMessages(CancellationToken cancellationToken);
+        public Task ProcessMessages(CancellationToken cancellationToken);
     }
 }
