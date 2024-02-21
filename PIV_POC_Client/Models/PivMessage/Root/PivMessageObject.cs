@@ -12,7 +12,5 @@ namespace PIV_POC_Client.Models.PivMessage.Root
         public PivMessageData MessageData { get; set; } = new PivMessageData();
 
         public Properties Properties { get; set; } = new Properties();
-
-        public string Operation { get; set; } = string.Empty;
     }
 }

@@ -3,6 +3,7 @@ using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
+using Amazon.SimpleNotificationService;
 using Amazon.SQS;
 using Microsoft.Extensions.DependencyInjection;
 using PIV_POC_Client.AWS.Repos;
@@ -35,11 +36,8 @@ namespace PIV_POC_Client.DI
 
             services.AddSingleton<IAsyncPolicy>(policy);
 
-            services.AddAWSService<IAmazonSQS>();
-            services.AddTransient<ISqsRepository, SqsRepository>();
-
-            services.AddAWSService<IAmazonS3>();
-            services.AddTransient<IS3Repository, S3Repository>();
+            services.AddAWSService<IAmazonSimpleNotificationService>();
+            services.AddTransient<ISnsRepository, SnsRepository>();
 
             return services;
         }
