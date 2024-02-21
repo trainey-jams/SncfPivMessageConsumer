@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using PIV_POC_Client.Interfaces;
 using System.Threading.Channels;
 
-namespace PIV_POC_Client.Services
+namespace SncfPivMessageConsumer.App
 {
     public class MessageService : IMessageService
     {
@@ -35,12 +35,12 @@ namespace PIV_POC_Client.Services
                     {
                         await Task.WhenAll
                         (
-                            ChannelProducer.WriteToChannel(Channel.Writer, cancellationToken), 
+                            ChannelProducer.WriteToChannel(Channel.Writer, cancellationToken),
                             Parallel.ForAsync(0, 100, async (item, cancellationToken) =>
                             {
                                 await ChannelConsumer.ConsumeMessages(Channel.Reader, cancellationToken);
                             })
-                        );                              
+                        );
 
                     }
 

@@ -5,12 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PIV_POC_Client._OpenWire;
 using PIV_POC_Client.Channels;
-using PIV_POC_Client.DI;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Mappers;
 using PIV_POC_Client.Models.Config;
 using PIV_POC_Client.Models.Config.Openwire;
-using PIV_POC_Client.Services;
+using SncfPivMessageConsumer.App;
+using SncfPivMessageConsumer.DI;
 using System.Threading.Channels;
 
 namespace PIV_POC_Client.App

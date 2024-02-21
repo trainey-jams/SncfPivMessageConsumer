@@ -10,7 +10,7 @@ using PIV_POC_Client.AWS.Repos;
 using PIV_POC_Client.Interfaces;
 using Polly;
 
-namespace PIV_POC_Client.DI
+namespace SncfPivMessageConsumer.DI
 {
     public static class AwsRegistration
     {
@@ -21,7 +21,7 @@ namespace PIV_POC_Client.DI
                 Credentials = new CredentialProfileStoreChain().TryGetAWSCredentials("default", out var defaultCredentials)
                 ? defaultCredentials
                 : new InstanceProfileAWSCredentials(),
-                 Region = RegionEndpoint.EUWest1
+                Region = RegionEndpoint.EUWest1
             });
 
             var circuitBreakerPolicy = Policy
