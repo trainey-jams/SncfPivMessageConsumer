@@ -2,13 +2,13 @@
 using Newtonsoft.Json;
 using PIV_POC_Client.Models.PivMessage.Root;
 using PIV_POC_Client.Interfaces;
+using SncfPivMessageConsumer.Mappers;
 
 namespace PIV_POC_Client.Mappers
 {
-
-    public class ActiveMQMapper : IActiveMQMapper
+    public class PivMapper : IPivMapper
     {
-        public PivMessageRoot Map(ActiveMQMessage rawMessage)
+        public PivMessageRoot MapAndTranslate(ActiveMQMessage rawMessage)
         {
             PivMessageRoot root = new PivMessageRoot();
 
@@ -23,6 +23,18 @@ namespace PIV_POC_Client.Mappers
             root.MessageBody = JsonConvert.DeserializeObject<MessageBody>(payload);
 
             return root;
+        }
+
+        public string Serialize(object obj, bool useLongNames)
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Formatting = Formatting.None;
+            if (useLongNames)
+            {
+                settings.ContractResolver = new PivContractResolver();
+            }
+
+            return JsonConvert.SerializeObject(obj, settings);
         }
     }
 }

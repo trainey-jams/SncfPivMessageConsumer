@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using PIV_POC_Client.Interfaces;
 using PIV_POC_Client.Models.PivMessage.Root;
-using PIV_POC_Client.Utility;
+using SncfPivMessageConsumer.Mappers;
 using System.Threading.Channels;
 
 namespace PIV_POC_Client.Channels
@@ -10,12 +10,12 @@ namespace PIV_POC_Client.Channels
     public class ChannelConsumer : IChannelConsumer
     {
         private readonly ILogger<ChannelConsumer> Logger;
-        private readonly IActiveMQMapper Mapper;
+        private readonly IPivMapper Mapper;
         private readonly ISnsRepository SnsRepository;
 
         public ChannelConsumer(
             ILogger<ChannelConsumer> logger,
-            IActiveMQMapper mapper,
+            IPivMapper mapper,
             ISnsRepository snsRepository)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -33,9 +33,9 @@ namespace PIV_POC_Client.Channels
                     {
                         var rawMessage = await channelReader.ReadAsync();
 
-                        PivMessageRoot mappedMessage = Mapper.Map(rawMessage);
+                        PivMessageRoot mappedMessage = Mapper.MapAndTranslate(rawMessage);
 
-                        string messageStr = TranslationSerializer.Serialize(mappedMessage, true);
+                        string messageStr = Mapper.Ser(mappedMessage, true);
 
                         if (await SnsRepository.PublishMessage(messageStr))
                         {

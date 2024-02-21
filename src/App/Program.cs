@@ -53,7 +53,7 @@ namespace PIV_POC_Client.App
 
             services.AddSingleton<Channel<ActiveMQMessage>>(Channel.CreateBounded<ActiveMQMessage>(500));
 
-            services.AddTransient<IActiveMQMapper, ActiveMQMapper>();
+            services.AddTransient<IPivMapper, PivMapper>();
             services.AddTransient<IOpenWireConnectionFactory, OpenWireConnectionFactory>();
             services.AddTransient<IOpenWireSessionFactory, OpenWireSessionFactory>();
 

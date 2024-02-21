@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace PIV_POC_Client.Utility
+namespace SncfPivMessageConsumer.Mappers
 {
-    public class TranslationContractResolver : DefaultContractResolver
+    public class PivContractResolver : DefaultContractResolver
     {
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
