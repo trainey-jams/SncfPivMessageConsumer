@@ -28,31 +28,22 @@ namespace SncfPivMessageConsumer.App
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            var task = Task.Run(async () =>
+            try
             {
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    try
+                await Task.WhenAll
+                (
+                    ChannelProducer.WriteToChannel(Channel.Writer, cancellationToken),
+                    Parallel.ForAsync(0, 100, async (item, cancellationToken) =>
                     {
-                        await Task.WhenAll
-                        (
-                            ChannelProducer.WriteToChannel(Channel.Writer, cancellationToken),
-                            Parallel.ForAsync(0, 100, async (item, cancellationToken) =>
-                            {
-                                await ChannelConsumer.ConsumeMessages(Channel.Reader, cancellationToken);
-                            })
-                        );
+                        await ChannelConsumer.ConsumeMessages(Channel.Reader, cancellationToken);
+                    })
+                );
+            }
 
-                    }
-
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex.ToString());
-                    }
-                }
-            }, cancellationToken);
-
-            //Logger.LogInformation("Cancellation has been requested, disconnecting from broker and shutting down.");
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
+            }    
         }
     }
 }
