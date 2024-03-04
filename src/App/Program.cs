@@ -9,7 +9,7 @@ namespace SncfPivMessageConsumer.App
         public static async Task Main(string[] args)
         {
             try
-            {                
+            {
                 var builder = Host.CreateApplicationBuilder(args);
 
                 builder.Services.ConfigureServices();

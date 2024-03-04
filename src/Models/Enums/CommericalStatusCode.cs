@@ -2,7 +2,7 @@
 
 namespace SncfPivMessageConsumer.Models.Enums
 {
-   public enum CommericalStatusCode
+    public enum CommericalStatusCode
     {
         C,
         F,
