@@ -1,11 +1,11 @@
 ﻿using Apache.NMS.ActiveMQ.Commands;
 using Microsoft.Extensions.Logging;
-using PIV_POC_Client.Interfaces;
-using PIV_POC_Client.Models.PivMessage.Root;
+using SncfPivMessageConsumer.Interfaces;
+using SncfPivMessageConsumer.Models.PivMessage.Root;
 using SncfPivMessageConsumer.Mappers;
 using System.Threading.Channels;
 
-namespace PIV_POC_Client.Channels
+namespace SncfPivMessageConsumer.Channels
 {
     public class ChannelConsumer : IChannelConsumer
     {

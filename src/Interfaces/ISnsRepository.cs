@@ -1,4 +1,4 @@
-﻿namespace PIV_POC_Client.Interfaces
+﻿namespace SncfPivMessageConsumer.Interfaces
 {
     public interface ISnsRepository
     {

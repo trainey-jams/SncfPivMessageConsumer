@@ -1,11 +1,12 @@
 ﻿using Apache.NMS.ActiveMQ.Commands;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PIV_POC_Client.Interfaces;
+using SncfPivMessageConsumer.Interfaces;
 using System.Threading.Channels;
 
 namespace SncfPivMessageConsumer.App
 {
-    public class MessageService : IMessageService
+    public class MessageService : BackgroundService
     {
         private readonly ILogger<MessageService> Logger;
         private readonly IChannelProducer ChannelProducer;
@@ -25,7 +26,7 @@ namespace SncfPivMessageConsumer.App
             Channel = channel ?? throw new ArgumentNullException(nameof(channel));
         }
 
-        public async Task ProcessMessages(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var task = Task.Run(async () =>
             {
@@ -50,6 +51,8 @@ namespace SncfPivMessageConsumer.App
                     }
                 }
             }, cancellationToken);
+
+            //Logger.LogInformation("Cancellation has been requested, disconnecting from broker and shutting down.");
         }
     }
 }

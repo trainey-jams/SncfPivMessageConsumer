@@ -1,4 +1,4 @@
-﻿namespace PIV_POC_Client.Models.Enums
+﻿namespace SncfPivMessageConsumer.Models.Enums
 {
     public enum TransportPlanSource
     {

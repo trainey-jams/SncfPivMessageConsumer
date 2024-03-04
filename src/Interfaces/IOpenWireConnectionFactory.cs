@@ -1,6 +1,6 @@
 ﻿using Apache.NMS;
 
-namespace PIV_POC_Client.Interfaces
+namespace SncfPivMessageConsumer.Interfaces
 {
     public interface IOpenWireConnectionFactory
     {

@@ -1,7 +1,7 @@
 ﻿using Apache.NMS;
-using PIV_POC_Client.Interfaces;
+using SncfPivMessageConsumer.Interfaces;
 
-namespace PIV_POC_Client._OpenWire
+namespace SncfPivMessageConsumer._OpenWire
 {
     public interface IOpenWireSessionFactory
     {

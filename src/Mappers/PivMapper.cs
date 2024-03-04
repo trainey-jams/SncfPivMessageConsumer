@@ -1,10 +1,10 @@
 ﻿using Apache.NMS.ActiveMQ.Commands;
 using Newtonsoft.Json;
-using PIV_POC_Client.Models.PivMessage.Root;
-using PIV_POC_Client.Interfaces;
+using SncfPivMessageConsumer.Models.PivMessage.Root;
+using SncfPivMessageConsumer.Interfaces;
 using SncfPivMessageConsumer.Mappers;
 
-namespace PIV_POC_Client.Mappers
+namespace SncfPivMessageConsumer.Mappers
 {
     public class PivMapper : IPivMapper
     {

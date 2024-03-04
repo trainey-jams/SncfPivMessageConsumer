@@ -2,13 +2,13 @@
 using Amazon.SimpleNotificationService.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PIV_POC_Client.Interfaces;
-using PIV_POC_Client.Models.Config;
+using SncfPivMessageConsumer.Interfaces;
+using SncfPivMessageConsumer.Models.Config;
 using Polly;
 using Polly.CircuitBreaker;
 using System.Net;
 
-namespace PIV_POC_Client.AWS.Repos
+namespace SncfPivMessageConsumer.AWS.Repos
 {
     public class SnsRepository : ISnsRepository
     {

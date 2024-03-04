@@ -1,10 +1,10 @@
 ﻿using Apache.NMS;
 using Apache.NMS.ActiveMQ;
 using Microsoft.Extensions.Options;
-using PIV_POC_Client.Interfaces;
-using PIV_POC_Client.Models.Config.Openwire;
+using SncfPivMessageConsumer.Interfaces;
+using SncfPivMessageConsumer.Models.Config.Openwire;
 
-namespace PIV_POC_Client._OpenWire
+namespace SncfPivMessageConsumer._OpenWire
 {
 
     public class OpenWireConnectionFactory : IOpenWireConnectionFactory

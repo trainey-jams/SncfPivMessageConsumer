@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Text.Json;
 
-namespace PIV_POC_Client.Models.PivMessage.MessageData
+namespace SncfPivMessageConsumer.Models.PivMessage.MessageData
 {
     public class SituationalMessages
     {

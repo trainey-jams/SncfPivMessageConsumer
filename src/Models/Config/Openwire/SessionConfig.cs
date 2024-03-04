@@ -1,6 +1,6 @@
 ﻿using Apache.NMS;
 
-namespace PIV_POC_Client.Models.Config.Openwire
+namespace SncfPivMessageConsumer.Models.Config.Openwire
 {
     public class SessionConfig
     {

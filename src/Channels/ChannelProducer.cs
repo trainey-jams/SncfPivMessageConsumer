@@ -2,12 +2,12 @@
 using Apache.NMS.ActiveMQ.Commands;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PIV_POC_Client._OpenWire;
-using PIV_POC_Client.Interfaces;
-using PIV_POC_Client.Models.Config.Openwire;
+using SncfPivMessageConsumer._OpenWire;
+using SncfPivMessageConsumer.Interfaces;
+using SncfPivMessageConsumer.Models.Config.Openwire;
 using System.Threading.Channels;
 
-namespace PIV_POC_Client.Channels
+namespace SncfPivMessageConsumer.Channels
 {
     public class ChannelProducer : IChannelProducer
     {

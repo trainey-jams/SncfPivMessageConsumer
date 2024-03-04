@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace PIV_POC_Client.Models.Enums
+namespace SncfPivMessageConsumer.Models.Enums
 {
     public enum ServiceEvent
     {

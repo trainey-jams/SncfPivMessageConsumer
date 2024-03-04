@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using PIV_POC_Client.Models.Enums;
+using SncfPivMessageConsumer.Models.Enums;
 using System.Text.Json;
 
-namespace PIV_POC_Client.Models.PivMessage.Root
+namespace SncfPivMessageConsumer.Models.PivMessage.Root
 {
     public class Properties
     {

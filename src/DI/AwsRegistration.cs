@@ -6,8 +6,8 @@ using Amazon.S3;
 using Amazon.SimpleNotificationService;
 using Amazon.SQS;
 using Microsoft.Extensions.DependencyInjection;
-using PIV_POC_Client.AWS.Repos;
-using PIV_POC_Client.Interfaces;
+using SncfPivMessageConsumer.AWS.Repos;
+using SncfPivMessageConsumer.Interfaces;
 using Polly;
 
 namespace SncfPivMessageConsumer.DI

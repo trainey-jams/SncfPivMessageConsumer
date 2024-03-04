@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace PIV_POC_Client.Models.PivMessage.Root
+namespace SncfPivMessageConsumer.Models.PivMessage.Root
 {
     public class PivMessageRoot
     {

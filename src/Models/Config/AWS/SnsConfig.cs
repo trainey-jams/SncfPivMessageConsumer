@@ -1,4 +1,4 @@
-﻿namespace PIV_POC_Client.Models.Config
+﻿namespace SncfPivMessageConsumer.Models.Config
 {
     public class SnsConfig
     {

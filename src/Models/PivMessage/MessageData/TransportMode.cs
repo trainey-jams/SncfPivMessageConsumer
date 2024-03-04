@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using PIV_POC_Client.Models.Enums;
+using SncfPivMessageConsumer.Models.Enums;
 
-namespace PIV_POC_Client.Models.PivMessage.MessageData
+namespace SncfPivMessageConsumer.Models.PivMessage.MessageData
 {
     public class TransportMode
     {
