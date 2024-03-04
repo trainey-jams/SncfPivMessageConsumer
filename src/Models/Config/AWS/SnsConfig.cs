@@ -4,8 +4,8 @@
     {
         public string Region { get; set; } = string.Empty;
 
-        public string QueueId {  get; set; } = string.Empty;
-        
+        public string QueueId { get; set; } = string.Empty;
+
         public string TopicName { get; set; } = string.Empty;
 
         public string GetSnsTopic() =>

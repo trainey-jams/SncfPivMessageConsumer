@@ -19,7 +19,7 @@ namespace SncfPivMessageConsumer.Models.PivMessage.MessageData
         [JsonProperty("rang")]
         public int? Rank { get; set; } // If train goes from station A to station C, A -> B -> C Then first station A will have rank 1, the second one B will have rank 2 etc.
                                        // There might be a more suitable name for it.
-        
+
         [JsonProperty("rangInterne")]
         public int? InternalRank { get; set; }
 

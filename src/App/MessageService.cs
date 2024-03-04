@@ -43,7 +43,7 @@ namespace SncfPivMessageConsumer.App
             catch (Exception ex)
             {
                 Logger.LogError(ex.ToString());
-            }    
+            }
         }
     }
 }
