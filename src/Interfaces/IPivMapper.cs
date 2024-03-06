@@ -1,12 +1,13 @@
 ﻿using Apache.NMS.ActiveMQ.Commands;
+using SncfPivMessageConsumer.Models;
 using SncfPivMessageConsumer.Models.PivMessage.Root;
 
 namespace SncfPivMessageConsumer.Interfaces
 {
     public interface IPivMapper
     {
-        PivMessageRoot MapAndTranslate(ActiveMQMessage rawMessage);
+        public PivMessageRoot MapAndTranslate(ActiveMQMessageWrapper rawMessage);
 
-        string Serialize(object obj, bool useLongNames);
+        public string Serialize(object obj, bool useLongNames);
     }
 }

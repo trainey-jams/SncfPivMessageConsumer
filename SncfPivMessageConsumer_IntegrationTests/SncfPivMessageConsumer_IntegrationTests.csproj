@@ -10,14 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Stubs\**" />
-    <EmbeddedResource Remove="Stubs\**" />
-    <None Remove="Stubs\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Apache.NMS.ActiveMQ" Version="2.1.0" />
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.300.51" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
     <PackageReference Include="NewRelic.Agent.Api" Version="10.21.0" />
     <PackageReference Include="NUnit" Version="3.13.3" />

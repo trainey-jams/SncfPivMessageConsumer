@@ -1,8 +1,7 @@
-﻿using Apache.NMS.ActiveMQ.Commands;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using SncfPivMessageConsumer.Interfaces;
+using SncfPivMessageConsumer.Models;
 using SncfPivMessageConsumer.Models.PivMessage.Root;
-using SncfPivMessageConsumer.Mappers;
 using System.Threading.Channels;
 
 namespace SncfPivMessageConsumer.Channels
@@ -23,7 +22,7 @@ namespace SncfPivMessageConsumer.Channels
             SnsRepository = snsRepository ?? throw new ArgumentNullException(nameof(snsRepository));
         }
 
-        public async Task ConsumeMessages(ChannelReader<ActiveMQMessage> channelReader, CancellationToken token)
+        public async Task ConsumeMessages(ChannelReader<ActiveMQMessageWrapper> channelReader, CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
@@ -39,17 +38,17 @@ namespace SncfPivMessageConsumer.Channels
 
                         if (await SnsRepository.PublishMessage(messageStr))
                         {
-                            await rawMessage.AcknowledgeAsync();
+                            await rawMessage.Message.AcknowledgeAsync();
                         }
                         else
                         {
-                            Logger.LogWarning($"Failed to process message with id {mappedMessage.MessageId}");
+                            Logger.LogWarning("Failed to publish message to SNS. MessageId {MessageId}, ConversationId {ConversationId}", mappedMessage.MessageId, mappedMessage.ConversationId);
                         }
                     }
 
                     catch (Exception ex)
                     {
-                        Logger.LogError(ex.ToString());
+                        Logger.LogError("Unexpected exception occurred. {Exception}", ex.Message);
                     }
                 }
             }

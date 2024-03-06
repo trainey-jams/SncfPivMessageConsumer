@@ -3,23 +3,25 @@ using Newtonsoft.Json;
 using SncfPivMessageConsumer.Models.PivMessage.Root;
 using SncfPivMessageConsumer.Interfaces;
 using SncfPivMessageConsumer.Mappers;
+using SncfPivMessageConsumer.Models;
 
 namespace SncfPivMessageConsumer.Mappers
 {
     public class PivMapper : IPivMapper
     {
-        public PivMessageRoot MapAndTranslate(ActiveMQMessage rawMessage)
+        public PivMessageRoot MapAndTranslate(ActiveMQMessageWrapper rawMessage)
         {
             PivMessageRoot root = new PivMessageRoot();
 
-            root.Priority = rawMessage.Priority;
-            root.BrokerInTime = DateTimeOffset.FromUnixTimeMilliseconds(rawMessage.BrokerInTime).LocalDateTime;
-            root.BrokerOutTime = DateTimeOffset.FromUnixTimeMilliseconds(rawMessage.BrokerOutTime).LocalDateTime;
-            root.Expiration = rawMessage.Expiration.ToString();
-            root.Destination = rawMessage.Destination.ToString();
-            root.MessageId = rawMessage.MessageId.ToString();
+            root.Priority = rawMessage.Message.Priority;
+            root.BrokerInTime = DateTimeOffset.FromUnixTimeMilliseconds(rawMessage.Message.BrokerInTime).LocalDateTime;
+            root.BrokerOutTime = DateTimeOffset.FromUnixTimeMilliseconds(rawMessage.Message.BrokerOutTime).LocalDateTime;
+            root.Expiration = rawMessage.Message.Expiration.ToString();
+            root.Destination = rawMessage.Message.Destination.ToString();
+            root.MessageId = rawMessage.Message.MessageId.ToString();
+            root.ConversationId = rawMessage.ConversationId;
 
-            string payload = System.Text.Encoding.UTF8.GetString(rawMessage.Content);
+            string payload = System.Text.Encoding.UTF8.GetString(rawMessage.Message.Content);
             root.MessageBody = JsonConvert.DeserializeObject<MessageBody>(payload);
 
             return root;

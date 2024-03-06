@@ -12,6 +12,8 @@ namespace SncfPivMessageConsumer.Models.PivMessage.Root
 
         public string Destination { get; set; } = string.Empty;
 
+        public string ConversationId { get; set; } = string.Empty;
+
         public string MessageId { get; set; } = string.Empty;
 
         public byte Priority { get; set; }

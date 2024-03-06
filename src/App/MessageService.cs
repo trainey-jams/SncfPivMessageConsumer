@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SncfPivMessageConsumer.Interfaces;
+using SncfPivMessageConsumer.Models;
 using System.Threading.Channels;
 
 namespace SncfPivMessageConsumer.App
@@ -11,13 +12,13 @@ namespace SncfPivMessageConsumer.App
         private readonly ILogger<MessageService> Logger;
         private readonly IChannelProducer ChannelProducer;
         private readonly IChannelConsumer ChannelConsumer;
-        private readonly Channel<ActiveMQMessage> Channel;
+        private readonly Channel<ActiveMQMessageWrapper> Channel;
 
         public MessageService(
             ILogger<MessageService> logger,
             IChannelProducer channelProducer,
             IChannelConsumer channelConsumer,
-            Channel<ActiveMQMessage> channel
+            Channel<ActiveMQMessageWrapper> channel
             )
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -42,7 +43,7 @@ namespace SncfPivMessageConsumer.App
 
             catch (Exception ex)
             {
-                Logger.LogError(ex.ToString());
+                Logger.LogError("Unexpected exception occurred. {Exception}", ex.Message);
             }
         }
     }
