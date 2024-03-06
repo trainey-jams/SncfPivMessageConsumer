@@ -11,7 +11,7 @@ namespace SncfPivMessageConsumer.App
         {
             try
             {
-                IHost host = Host.CreateApplicationBuilder(args).ConfigureAppConfiguration((hostContext, builder) =>
+                IHost host = Host.CreateDefaultBuilder(args).ConfigureAppConfiguration((hostContext, builder) =>
                 {
                     if (hostContext.HostingEnvironment.IsDevelopment())
                     {
