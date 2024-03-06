@@ -20,7 +20,10 @@ namespace SncfPivMessageConsumer.DI
     {
         public static IServiceCollection ConfigureServices(this IServiceCollection services)
         {
-            var Configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            var Configuration = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables().Build();
 
             services.AddTrainlineSerilogServices(Configuration).BuildServiceProvider();
 
