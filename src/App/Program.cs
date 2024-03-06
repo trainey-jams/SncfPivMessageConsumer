@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SncfPivMessageConsumer.DI;
 
@@ -10,12 +11,22 @@ namespace SncfPivMessageConsumer.App
         {
             try
             {
-                var builder = Host.CreateApplicationBuilder(args);
-
-                builder.Services.ConfigureServices();
-
-                builder.Services.AddHostedService<MessageService>();
-                IHost host = builder.Build();
+                IHost host = Host.CreateApplicationBuilder(args).ConfigureAppConfiguration((hostContext, builder) =>
+                {
+                    if (hostContext.HostingEnvironment.IsDevelopment())
+                    {
+                        builder.AddUserSecrets<Program>();
+                    }
+                    else
+                    {
+                        builder.AddAwsSecrets();
+                    }
+                }).ConfigureServices(services =>
+                {
+                    ServiceRegistration.ConfigureServices(services);
+                    services.AddHostedService<MessageService>();
+                }).Build();
+                
                 await host.RunAsync();
             }
 

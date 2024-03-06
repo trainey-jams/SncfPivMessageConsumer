@@ -16,13 +16,13 @@ namespace SncfPivMessageConsumer.DI
     {
         public static IServiceCollection AddAws(this IServiceCollection services)
         {
-            services.AddTransient(sp => new AWSOptions
-            {
-                Credentials = new CredentialProfileStoreChain().TryGetAWSCredentials("default", out var defaultCredentials)
-                ? defaultCredentials
-                : new InstanceProfileAWSCredentials(),
-                Region = RegionEndpoint.EUWest1
-            });
+            //services.AddTransient(sp => new AWSOptions
+            //{
+            //    Credentials = new CredentialProfileStoreChain().TryGetAWSCredentials("default", out var defaultCredentials)
+            //    ? defaultCredentials
+            //    : new InstanceProfileAWSCredentials(),
+            //    Region = RegionEndpoint.EUWest1
+            //});
 
             var circuitBreakerPolicy = Policy
                 .Handle<AmazonS3Exception>()
