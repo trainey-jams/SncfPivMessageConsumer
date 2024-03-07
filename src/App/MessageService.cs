@@ -1,9 +1,9 @@
 ﻿using Apache.NMS.ActiveMQ.Commands;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using SncfPivMessageConsumer.Interfaces;
 using SncfPivMessageConsumer.Models;
 using System.Threading.Channels;
+using SncfPivMessageConsumer.Channels;
 
 namespace SncfPivMessageConsumer.App
 {

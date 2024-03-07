@@ -1,19 +1,14 @@
 ﻿using Newtonsoft.Json;
 
-namespace SncfPivMessageConsumer.Models.Enums
+namespace SncfPivMessageConsumer.Models.Enums;
+
+public enum TransportModeCode
 {
-    public enum TransportModeCode
-    {
-        [JsonProperty("rail")]
-        Rail,
+    [JsonProperty("rail")] Rail,
 
-        [JsonProperty("coach")]
-        Coach,
+    [JsonProperty("coach")] Coach,
 
-        [JsonProperty("bus")]
-        Bus,
+    [JsonProperty("bus")] Bus,
 
-        [JsonProperty("tram")]
-        Tram,
-    }
+    [JsonProperty("tram")] Tram,
 }

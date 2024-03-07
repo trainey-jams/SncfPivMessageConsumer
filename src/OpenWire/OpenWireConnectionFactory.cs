@@ -1,8 +1,8 @@
 ﻿using Apache.NMS;
 using Apache.NMS.ActiveMQ;
 using Microsoft.Extensions.Options;
-using SncfPivMessageConsumer.Interfaces;
 using SncfPivMessageConsumer.Models.Config.Openwire;
+using SncfPivMessageConsumer.OpenWire;
 
 namespace SncfPivMessageConsumer._OpenWire
 {

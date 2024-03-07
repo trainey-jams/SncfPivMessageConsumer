@@ -1,5 +1,5 @@
 ﻿using Apache.NMS;
-using SncfPivMessageConsumer.Interfaces;
+using SncfPivMessageConsumer.OpenWire;
 
 namespace SncfPivMessageConsumer._OpenWire
 {

@@ -4,42 +4,39 @@ using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.SimpleNotificationService;
-using Amazon.SQS;
 using Microsoft.Extensions.DependencyInjection;
-using SncfPivMessageConsumer.AWS.Repos;
-using SncfPivMessageConsumer.Interfaces;
 using Polly;
+using SncfPivMessageConsumer.AWS.Repos;
 
-namespace SncfPivMessageConsumer.DI
+namespace SncfPivMessageConsumer.AppComposition;
+
+public static class AwsRegistration
 {
-    public static class AwsRegistration
+    public static IServiceCollection AddAws(this IServiceCollection services)
     {
-        public static IServiceCollection AddAws(this IServiceCollection services)
+        services.AddTransient(sp => new AWSOptions
         {
-            services.AddTransient(sp => new AWSOptions
-            {
-                Credentials = new CredentialProfileStoreChain().TryGetAWSCredentials("default", out var defaultCredentials)
+            Credentials = new CredentialProfileStoreChain().TryGetAWSCredentials("default", out var defaultCredentials)
                 ? defaultCredentials
                 : new InstanceProfileAWSCredentials(),
-                Region = RegionEndpoint.EUWest1
-            });
+            Region = RegionEndpoint.EUWest1
+        });
 
-            var circuitBreakerPolicy = Policy
-                .Handle<AmazonS3Exception>()
-                .CircuitBreakerAsync(3, TimeSpan.FromMinutes(1));
+        var circuitBreakerPolicy = Policy
+            .Handle<AmazonS3Exception>()
+            .CircuitBreakerAsync(3, TimeSpan.FromMinutes(1));
 
-            var retryPolicy = Policy
-                .Handle<AmazonS3Exception>()
-                .RetryAsync(1);
+        var retryPolicy = Policy
+            .Handle<AmazonS3Exception>()
+            .RetryAsync(1);
 
-            var policy = Policy.WrapAsync(circuitBreakerPolicy, retryPolicy);
+        var policy = Policy.WrapAsync(circuitBreakerPolicy, retryPolicy);
 
-            services.AddSingleton<IAsyncPolicy>(policy);
+        services.AddSingleton<IAsyncPolicy>(policy);
 
-            services.AddAWSService<IAmazonSimpleNotificationService>();
-            services.AddTransient<ISnsRepository, SnsRepository>();
+        services.AddAWSService<IAmazonSimpleNotificationService>();
+        services.AddTransient<ISnsRepository, SnsRepository>();
 
-            return services;
-        }
+        return services;
     }
 }

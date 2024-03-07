@@ -1,64 +1,45 @@
 ﻿using Newtonsoft.Json;
 
-namespace SncfPivMessageConsumer.Models.Enums
+namespace SncfPivMessageConsumer.Models.Enums;
+
+public enum TransportModSubCode
 {
-    public enum TransportModSubCode
-    {
-        [JsonProperty("highSpeedRail")]
-        HighSpeedRail,
+    [JsonProperty("highSpeedRail")] HighSpeedRail,
 
-        [JsonProperty("suburbanRailway")]
-        SuburbanRailway,
+    [JsonProperty("suburbanRailway")] SuburbanRailway,
 
-        [JsonProperty("international")]
-        International,
+    [JsonProperty("international")] International,
 
-        [JsonProperty("interregionalRail")]
-        InterregionalRail,
+    [JsonProperty("interregionalRail")] InterregionalRail,
 
-        [JsonProperty("longDistance")]
-        LongDistance,
+    [JsonProperty("longDistance")] LongDistance,
 
-        [JsonProperty("railShuttle")]
-        RailShuttle,
+    [JsonProperty("railShuttle")] RailShuttle,
 
-        [JsonProperty("regionalRail")]
-        RegionalRail,
+    [JsonProperty("regionalRail")] RegionalRail,
 
-        [JsonProperty("specialTrain")]
-        SpecialTrain,
+    [JsonProperty("specialTrain")] SpecialTrain,
 
-        [JsonProperty("touristRailway")]
-        TouristRailway,
+    [JsonProperty("touristRailway")] TouristRailway,
 
-        [JsonProperty("crossCountryRail")]
-        CrossCountryRail,
+    [JsonProperty("crossCountryRail")] CrossCountryRail,
 
-        [JsonProperty("highServicelevelCoach")]
-        HighServicelevelCoach,
+    [JsonProperty("highServicelevelCoach")]
+    HighServicelevelCoach,
 
-        [JsonProperty("railReplacementCoach")]
-        RailReplacementCoach,
+    [JsonProperty("railReplacementCoach")] RailReplacementCoach,
 
-        [JsonProperty("commuterCoach")]
-        CommuterCoach,
+    [JsonProperty("commuterCoach")] CommuterCoach,
 
-        [JsonProperty("regionalCoach")]
-        RegionalCoach,
+    [JsonProperty("regionalCoach")] RegionalCoach,
 
-        [JsonProperty("specialCoach")]
-        SpecialCoach,
+    [JsonProperty("specialCoach")] SpecialCoach,
 
-        [JsonProperty("touristCoach")]
-        TouristCoach,
+    [JsonProperty("touristCoach")] TouristCoach,
 
-        [JsonProperty("specialCoach")]
-        OnDemandCoach,
+    [JsonProperty("specialCoach")] OnDemandCoach,
 
-        [JsonProperty("shuttleCoach")]
-        ShuttleCoach,
+    [JsonProperty("shuttleCoach")] ShuttleCoach,
 
-        [JsonProperty("tramTrain")]
-        TramTrain
-    }
+    [JsonProperty("tramTrain")] TramTrain
 }

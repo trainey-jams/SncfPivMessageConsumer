@@ -1,9 +1,8 @@
-﻿namespace SncfPivMessageConsumer.Models.Enums
+﻿namespace SncfPivMessageConsumer.Models.Enums;
+
+public enum TransportPlanSource
 {
-    public enum TransportPlanSource
-    {
-        PTA,
-        PTP,
-        OPE
-    }
+    PTA,
+    PTP,
+    OPE
 }

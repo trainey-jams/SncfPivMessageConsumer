@@ -1,11 +1,10 @@
 ﻿using Apache.NMS;
 
-namespace SncfPivMessageConsumer.Models.Config.Openwire
-{
-    public class SessionConfig
-    {
-        public AcknowledgementMode AcknowledgementMode { get; set; }
+namespace SncfPivMessageConsumer.Models.Config.Openwire;
 
-        public string TopicName { get; set; } = string.Empty;
-    }
+public class SessionConfig
+{
+    public AcknowledgementMode AcknowledgementMode { get; set; }
+
+    public string TopicName { get; set; } = string.Empty;
 }
