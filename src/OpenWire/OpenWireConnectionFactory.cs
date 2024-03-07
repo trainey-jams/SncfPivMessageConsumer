@@ -6,7 +6,6 @@ using SncfPivMessageConsumer.OpenWire;
 
 namespace SncfPivMessageConsumer._OpenWire
 {
-
     public class OpenWireConnectionFactory : IOpenWireConnectionFactory
     {
         private readonly BrokerConfig Config;
