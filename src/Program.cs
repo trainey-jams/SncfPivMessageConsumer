@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SncfPivMessageConsumer.App;
-using SncfPivMessageConsumer.AppComposition;
+using SncfPivMessageConsumer.DI;
 
 namespace SncfPivMessageConsumer;
 
@@ -14,7 +14,7 @@ public class Program
         {
             var builder = Host.CreateApplicationBuilder();
 
-            builder.Services.ConfigureServices();
+            builder.Services.ConfigureServices(builder.Configuration);
 
             if (!builder.Environment.IsDevelopment())
             {
