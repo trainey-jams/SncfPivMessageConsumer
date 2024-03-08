@@ -1,12 +1,8 @@
 ﻿using Apache.NMS;
 using SncfPivMessageConsumer.OpenWire;
 
-namespace SncfPivMessageConsumer._OpenWire
+namespace SncfPivMessageConsumer.OpenWire
 {
-    public interface IOpenWireSessionFactory
-    {
-        Task<ISession> GetSession(AcknowledgementMode acknowledgementMode);
-    }
 
     public class OpenWireSessionFactory : IOpenWireSessionFactory
     {

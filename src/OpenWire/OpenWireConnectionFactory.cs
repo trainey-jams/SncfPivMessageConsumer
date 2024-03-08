@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using SncfPivMessageConsumer.Models.Config.Openwire;
 using SncfPivMessageConsumer.OpenWire;
 
-namespace SncfPivMessageConsumer._OpenWire
+namespace SncfPivMessageConsumer.OpenWire
 {
     public class OpenWireConnectionFactory : IOpenWireConnectionFactory
     {

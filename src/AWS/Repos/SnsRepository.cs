@@ -1,26 +1,33 @@
-﻿using System.Net;
-using Amazon.SimpleNotificationService;
+﻿using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.CircuitBreaker;
 using SncfPivMessageConsumer.Models.Config;
+using System.Net;
 
 namespace SncfPivMessageConsumer.AWS.Repos;
 
-public class SnsRepository(ILogger<SnsRepository> logger, IOptions<SnsConfig> sqsConfig,
-        IAmazonSimpleNotificationService snsClient, IAsyncPolicy policy)
-    : ISnsRepository
+public class SnsRepository : ISnsRepository
 {
-    private readonly ILogger<SnsRepository> Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    private readonly SnsConfig SnsConfig = sqsConfig.Value ?? throw new ArgumentNullException(nameof(sqsConfig));
+    private readonly ILogger<SnsRepository> Logger;
+    private readonly SnsConfig SnsConfig;
+    private readonly IAmazonSimpleNotificationService SnsClient;
+    private readonly IAsyncPolicy Policy;
 
-    private readonly IAmazonSimpleNotificationService SnsClient =
-        snsClient ?? throw new ArgumentNullException(nameof(snsClient));
+    public SnsRepository
+    (   ILogger<SnsRepository> logger,
+        IOptions<SnsConfig> sqsConfig,
+        IAmazonSimpleNotificationService snsClient,
+        IAsyncPolicy policy)
 
-    private readonly IAsyncPolicy Policy = policy ?? throw new ArgumentNullException(nameof(policy));
-
+    {
+        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        SnsConfig = sqsConfig.Value ?? throw new ArgumentNullException(nameof(sqsConfig));
+        SnsClient = snsClient ?? throw new ArgumentNullException(nameof(snsClient));
+        Policy = policy ?? throw new ArgumentNullException(nameof(policy));
+    }
     public async Task<bool> PublishMessage(string message)
     {
         message = message.Replace(" ", "").Replace("\r\n", "");

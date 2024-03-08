@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NewRelic.Api.Agent;
-using SncfPivMessageConsumer._OpenWire;
 using SncfPivMessageConsumer.AppComposition;
 using SncfPivMessageConsumer.Channels;
 using SncfPivMessageConsumer.Mappers;
@@ -25,6 +24,7 @@ namespace SncfPivMessageConsumer.DI
             services.Configure<SnsConfig>(configuration.GetSection("SnsConfig"));
             services.Configure<BrokerConfig>(configuration.GetSection("BrokerConfig"));
             services.Configure<SessionConfig>(configuration.GetSection("SessionConfig"));
+            services.Configure<MessageServiceConfig>(configuration.GetSection("MessageServiceConfig"));
 
             services.AddSingleton<IServiceContext, ServiceContext>();
             services.AddSingleton<Channel<ActiveMQMessageWrapper>>(Channel.CreateBounded<ActiveMQMessageWrapper>(500));
@@ -32,6 +32,7 @@ namespace SncfPivMessageConsumer.DI
             services.AddTransient<IPivMapper, PivMapper>();
             services.AddTransient<IOpenWireConnectionFactory, OpenWireConnectionFactory>();
             services.AddTransient<IOpenWireSessionFactory, OpenWireSessionFactory>();
+            services.AddTransient<IOpenWireConsumerFactory, OpenWireConsumerFactory>();
 
             services.AddAws();
 

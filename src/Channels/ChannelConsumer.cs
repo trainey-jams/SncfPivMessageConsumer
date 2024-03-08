@@ -7,14 +7,22 @@ using SncfPivMessageConsumer.Models.PivMessage.Root;
 
 namespace SncfPivMessageConsumer.Channels;
 
-public class ChannelConsumer(ILogger<ChannelConsumer> logger,
+public class ChannelConsumer : IChannelConsumer
+{
+    private readonly ILogger<ChannelConsumer> Logger;
+    private readonly IPivMapper Mapper;
+    private readonly ISnsRepository SnsRepository;
+
+    public ChannelConsumer(
+        ILogger<ChannelConsumer> logger,
         IPivMapper mapper,
         ISnsRepository snsRepository)
-    : IChannelConsumer
-{
-    private readonly ILogger<ChannelConsumer> Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    private readonly IPivMapper Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    private readonly ISnsRepository SnsRepository = snsRepository ?? throw new ArgumentNullException(nameof(snsRepository));
+
+    {
+        Logger = logger;
+        Mapper = mapper;
+        SnsRepository = snsRepository;
+    }
 
     public async Task ConsumeMessages(ChannelReader<ActiveMQMessageWrapper> channelReader, CancellationToken token)
     {
