@@ -29,20 +29,17 @@ public class ChannelProducer : IChannelProducer
         {
             using var consumer = await OpenWireConsumerFactory.GetMessageConsumer();
 
-            while (!token.IsCancellationRequested)
+            while (await channelWriter.WaitToWriteAsync(token))
             {
-                while (await channelWriter.WaitToWriteAsync())
+                ActiveMQMessageWrapper rawMessage = new ActiveMQMessageWrapper
                 {
-                    ActiveMQMessageWrapper rawMessage = new ActiveMQMessageWrapper
-                    {
-                        Message = await consumer.ReceiveAsync() as ActiveMQMessage,
-                        ConversationId = ServiceContext.ConversationId,
-                    };
+                    Message = await consumer.ReceiveAsync() as ActiveMQMessage,
+                    ConversationId = ServiceContext.ConversationId,
+                };
 
-                    await channelWriter.WriteAsync(rawMessage);
-                }
+                await channelWriter.WriteAsync(rawMessage);
             }
-
+            
             channelWriter.Complete();
         }
         catch (Exception ex)

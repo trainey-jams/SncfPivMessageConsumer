@@ -26,34 +26,31 @@ public class ChannelConsumer : IChannelConsumer
 
     public async Task ConsumeMessages(ChannelReader<ActiveMQMessageWrapper> channelReader, CancellationToken token)
     {
-        while (!token.IsCancellationRequested)
+        while (await channelReader.WaitToReadAsync(token))
         {
-            while (await channelReader.WaitToReadAsync())
+            try
             {
-                try
+                var rawMessage = await channelReader.ReadAsync();
+
+                PivMessageRoot mappedMessage = await Mapper.MapAndTranslate(rawMessage);
+
+                string messageStr = Mapper.Serialize(mappedMessage, true);
+
+                if (await SnsRepository.PublishMessage(messageStr))
                 {
-                    var rawMessage = await channelReader.ReadAsync();
-
-                    PivMessageRoot mappedMessage = Mapper.MapAndTranslate(rawMessage);
-
-                    string messageStr = Mapper.Serialize(mappedMessage, true);
-
-                    if (await SnsRepository.PublishMessage(messageStr))
-                    {
-                        await rawMessage.Message.AcknowledgeAsync();
-                    }
-                    else
-                    {
-                        Logger.LogWarning(
-                            "Failed to publish message to SNS. MessageId {MessageId}, ConversationId {ConversationId}",
-                            mappedMessage.MessageId, mappedMessage.ConversationId);
-                    }
+                    await rawMessage.Message.AcknowledgeAsync();
                 }
-
-                catch (Exception ex)
+                else
                 {
-                    Logger.LogError("Unexpected exception occurred. {Exception}", ex.Message);
+                    Logger.LogWarning(
+                        "Failed to publish message to SNS. MessageId {MessageId}, ConversationId {ConversationId}",
+                        mappedMessage.MessageId, mappedMessage.ConversationId);
                 }
+            }
+
+            catch (Exception ex)
+            {
+                Logger.LogError("Unexpected exception occurred. {Exception}", ex.Message);
             }
         }
     }

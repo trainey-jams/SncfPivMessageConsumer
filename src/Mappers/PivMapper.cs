@@ -7,7 +7,7 @@ namespace SncfPivMessageConsumer.Mappers;
 
 public class PivMapper : IPivMapper
 {
-    public PivMessageRoot MapAndTranslate(ActiveMQMessageWrapper rawMessage)
+    public Task<PivMessageRoot> MapAndTranslate(ActiveMQMessageWrapper rawMessage)
     {
         PivMessageRoot root = new PivMessageRoot();
 
@@ -15,14 +15,13 @@ public class PivMapper : IPivMapper
         root.BrokerInTime = DateTimeOffset.FromUnixTimeMilliseconds(rawMessage.Message.BrokerInTime).LocalDateTime;
         root.BrokerOutTime = DateTimeOffset.FromUnixTimeMilliseconds(rawMessage.Message.BrokerOutTime).LocalDateTime;
         root.Expiration = rawMessage.Message.Expiration.ToString();
-        root.Destination = rawMessage.Message.Destination.ToString();
-        root.MessageId = rawMessage.Message.MessageId.ToString();
+     //   root.MessageId = rawMessage.Message.MessageId.ToString();
         root.ConversationId = rawMessage.ConversationId;
 
         string payload = Encoding.UTF8.GetString(rawMessage.Message.Content);
         root.MessageBody = JsonConvert.DeserializeObject<MessageBody>(payload);
 
-        return root;
+        return Task.FromResult(root);
     }
 
     public string Serialize(object obj, bool useLongNames)

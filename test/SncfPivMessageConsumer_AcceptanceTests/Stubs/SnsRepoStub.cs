@@ -6,7 +6,7 @@ public class SnsRepoStub: ISnsRepository
 {
     public async Task<bool> PublishMessage(string message)
     {
-        if (message == "something")
+        if (true)
         {
             return true;
         }
