@@ -53,7 +53,7 @@ namespace SncfPivMessageConsumer.App
 
             catch(Exception ex)
             {
-                Logger.LogError(ex.Message);
+                Logger.LogError("Unexpected exception occurred. {Exception}", ex.Message);
             }
         }
     }

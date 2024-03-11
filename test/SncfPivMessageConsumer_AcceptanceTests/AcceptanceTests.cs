@@ -31,8 +31,12 @@ namespace SncfPivMessageConsumer_AcceptanceTests
             MessageToTest = InitMessage();
         }
 
+        /// <summary>
+        /// Attempts to process a single mocked message from ingestion through to publication to SNS.
+        /// Verification via logs and message acknowledger being called. 
+        /// </summary>
         [Fact]
-        public async Task MessageServiceTest()
+        public async Task MessageServiceSingleRun()
         {
             MessageAcknowledgementSubs = Substitute.For<ILogger<AcceptanceTests>>();
             var logger = Substitute.For<ILogger<MessageService>>();
@@ -42,7 +46,7 @@ namespace SncfPivMessageConsumer_AcceptanceTests
             var service = new MessageService(logger, config, GetChannelProducer(), GetChannelConsumer(), channel);
 
             var tokenSource = new CancellationTokenSource();
-            tokenSource.CancelAfter(TimeSpan.FromSeconds(20));
+            tokenSource.CancelAfter(TimeSpan.FromSeconds(10));
 
             await service.StartAsync(tokenSource.Token);
 

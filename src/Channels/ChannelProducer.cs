@@ -44,8 +44,7 @@ public class ChannelProducer : IChannelProducer
         }
         catch (Exception ex)
         {
-            // todo: better exception message, e.g. "Error while processing request from {Address}"
-            Logger.LogError(ex, "Unexpected exception occurred.");
+            Logger.LogError("Unexpected exception occurred. {Exception}", ex.Message);
         }
     }
 }  

@@ -7,7 +7,7 @@ namespace SncfPivMessageConsumer.Mappers;
 
 public class PivMapper : IPivMapper
 {
-    public Task<PivMessageRoot> MapAndTranslate(ActiveMQMessageWrapper rawMessage)
+    public PivMessageRoot MapAndTranslate(ActiveMQMessageWrapper rawMessage)
     {
         PivMessageRoot root = new PivMessageRoot();
 
@@ -21,7 +21,7 @@ public class PivMapper : IPivMapper
         string payload = Encoding.UTF8.GetString(rawMessage.Message.Content);
         root.MessageBody = JsonConvert.DeserializeObject<MessageBody>(payload);
 
-        return Task.FromResult(root);
+        return root;
     }
 
     public string Serialize(object obj, bool useLongNames)

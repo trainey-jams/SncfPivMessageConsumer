@@ -32,7 +32,7 @@ public class ChannelConsumer : IChannelConsumer
             {
                 var rawMessage = await channelReader.ReadAsync();
 
-                PivMessageRoot mappedMessage = await Mapper.MapAndTranslate(rawMessage);
+                PivMessageRoot mappedMessage = Mapper.MapAndTranslate(rawMessage);
 
                 string messageStr = Mapper.Serialize(mappedMessage, true);
 
