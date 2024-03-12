@@ -39,8 +39,6 @@ namespace SncfPivMessageConsumer.DI
             services.AddTransient<IChannelConsumer, ChannelConsumer>();
             services.AddTransient<IChannelProducer, ChannelProducer>();
 
-            services.AddSingleton(configuration);
-
             return services;
         }
     }
