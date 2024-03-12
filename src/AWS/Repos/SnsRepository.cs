@@ -23,10 +23,10 @@ public class SnsRepository : ISnsRepository
         IAsyncPolicy policy)
 
     {
-        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        SnsConfig = sqsConfig.Value ?? throw new ArgumentNullException(nameof(sqsConfig));
-        SnsClient = snsClient ?? throw new ArgumentNullException(nameof(snsClient));
-        Policy = policy ?? throw new ArgumentNullException(nameof(policy));
+        Logger = logger;
+        SnsConfig = sqsConfig.Value;
+        SnsClient = snsClient;
+        Policy = policy;
     }
     public async Task<bool> PublishMessage(string message)
     {
