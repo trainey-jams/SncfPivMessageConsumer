@@ -46,9 +46,7 @@ namespace SncfPivMessageConsumer.App
             }
             catch(OperationCanceledException canEx)
             {
-                Logger.LogError("Cancellation has been requested {info}", canEx.Message);
-
-                Logger.LogInformation("Message service shutting down.");
+                Logger.LogInformation("Cancellation has been requested {info}, message service shutting down.", canEx.Message);
             }
 
             catch(Exception ex)
